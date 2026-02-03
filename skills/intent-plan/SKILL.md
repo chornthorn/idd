@@ -115,9 +115,146 @@ If browser/headless testing is truly necessary:
 - Create dedicated test endpoints
 - Prefer API calls over UI interaction
 
+## Pre-Plan Gates (Mandatory)
+
+**Before generating any plan, ALL gates must pass. No exceptions.**
+
+```
+/intent-plan
+    ↓
+┌─────────────────────────────────────┐
+│ Gate 1: Interview Check             │
+│   ✗ → "先跑 /intent-interview"       │
+└─────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────┐
+│ Gate 2: Critique Check              │
+│   ✗ → "先跑 /intent-critique"        │
+└─────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────┐
+│ Gate 3: Dependency Check            │
+│   ✗ → "前置任务未完成，无法 plan"    │
+└─────────────────────────────────────┘
+    ↓
+✓ All gates passed → Generate plan.md
+```
+
+### Gate 1: Interview Check
+
+Verify the Intent has been properly interviewed:
+
+| Check | How to Verify | If Failed |
+|-------|---------------|-----------|
+| INTENT.md exists | File exists in intent directory | Run `/intent-interview` |
+| Structure complete | Has Responsibilities, Structure, API sections | Run `/intent-interview` |
+| Not a stub | Content is substantial, not placeholder text | Run `/intent-interview` |
+
+**Output if failed:**
+```
+❌ Gate 1 Failed: Interview Incomplete
+
+INTENT.md is missing or incomplete:
+- [ ] Responsibilities section missing
+- [ ] Structure diagram missing
+
+Action required: Run /intent-interview first.
+```
+
+### Gate 2: Critique Check
+
+Verify the Intent has been critiqued for over-engineering:
+
+| Check | How to Verify | If Failed |
+|-------|---------------|-----------|
+| Critique done | Look for critique markers or changelog | Run `/intent-critique` |
+| Post-modification | If INTENT.md modified after last critique | Run `/intent-critique` again |
+| AI assessment | Ask AI if another critique round is needed | Run `/intent-critique` if yes |
+
+**Critique markers to look for:**
+- `<!-- critique: {date} -->` comment in INTENT.md
+- `critique.md` or `CRITIQUE.md` in same directory
+- Changelog entry mentioning critique
+
+**Post-modification detection:**
+- Compare INTENT.md mtime with critique marker date
+- If INTENT.md is newer AND has substantial changes → re-critique required
+
+**AI Assessment prompt:**
+> "Based on this Intent, is there any sign of over-engineering, premature abstraction, or YAGNI violation that warrants another critique round?"
+
+**Output if failed:**
+```
+❌ Gate 2 Failed: Critique Required
+
+Intent has not been critiqued, or was modified after critique:
+- Last critique: 2026-01-15
+- INTENT.md modified: 2026-01-20 (substantial changes detected)
+
+Action required: Run /intent-critique to review for over-engineering.
+```
+
+### Gate 3: Dependency Check
+
+Verify all prerequisites are satisfied:
+
+| Check | How to Verify | If Failed |
+|-------|---------------|-----------|
+| Internal deps | Referenced intents have `status: done` in TASK.yaml | List blocking intents |
+| External deps | Required packages/services exist | List missing dependencies |
+| Environment | Required env vars, credentials, access | List missing setup |
+
+**How to find dependencies:**
+1. Parse `## Prerequisites` or `## Dependencies` in INTENT.md
+2. Look for `depends_on:` in TASK.yaml (if exists)
+3. Scan for references like `intent/other-feature/` or `@package/name`
+
+**Dependency states:**
+```
+intent/auth/         → TASK.yaml status: done     ✓ OK
+intent/database/     → TASK.yaml status: review   ✗ Blocked (not done)
+intent/api/          → No TASK.yaml               ? Assume not started
+@aigne/afs           → Check packages/ or deps    ✓/✗
+```
+
+**Output if failed:**
+```
+❌ Gate 3 Failed: Dependencies Not Ready
+
+This Intent cannot be planned because prerequisites are incomplete:
+
+Blocking Intents:
+- intent/auth-module/ → status: in_progress (need: done)
+- intent/database-setup/ → status: ready (need: done)
+
+Missing External Dependencies:
+- @aigne/session-protocol → not found in packages/
+
+Action required: Complete blocking tasks first, or remove dependencies from INTENT.md if not actually needed.
+```
+
+### Gate Pass Output
+
+When all gates pass:
+```
+✓ Gate 1: Interview complete
+✓ Gate 2: Critique done (2026-01-20), no re-critique needed
+✓ Gate 3: All 2 dependencies satisfied
+
+Proceeding to generate plan...
+```
+
 ## Workflow
 
 ```
+/intent-plan
+    ↓
+Gate 1: Interview Check ──→ ✗ → Stop, require /intent-interview
+    ↓ ✓
+Gate 2: Critique Check ───→ ✗ → Stop, require /intent-critique
+    ↓ ✓
+Gate 3: Dependency Check ─→ ✗ → Stop, list blockers
+    ↓ ✓
 Read Intent file
     ↓
 Analyze scope and complexity
@@ -286,11 +423,13 @@ heartbeat: null
 
 ```
 IDD Flow:
-/intent-interview     # Create Intent
+/intent-interview     # Create Intent (Gate 1 requirement)
     ↓
-/intent-review        # Approve Intent
+/intent-critique      # Review for over-engineering (Gate 2 requirement)
     ↓
-/intent-plan          # Generate plan.md + TASK.yaml (THIS SKILL)
+/intent-review        # Approve Intent (optional but recommended)
+    ↓
+/intent-plan          # Gate checks → Generate plan.md + TASK.yaml (THIS SKILL)
     ↓
 TaskSwarm Flow:
 /swarm run            # Execute plan (TDD cycles)
@@ -299,6 +438,11 @@ TaskSwarm Flow:
     ↓
 /intent-sync          # Write back confirmed details
 ```
+
+**Gate enforcement ensures quality:**
+- No plan without proper interview → avoids vague/incomplete specs
+- No plan without critique → avoids over-engineered designs
+- No plan with missing deps → avoids unexecutable plans
 
 ## Tips for Good Plans
 
