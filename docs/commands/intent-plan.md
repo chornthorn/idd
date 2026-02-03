@@ -13,6 +13,52 @@
 
 Transforms an approved Intent into a structured, executable development plan. The output is **TaskSwarm-compatible** and can be directly executed by `/swarm run`.
 
+## Pre-Plan Gates (Mandatory)
+
+**Before generating any plan, ALL gates must pass:**
+
+```
+/intent-plan
+    ↓
+┌─────────────────────────────────────┐
+│ Gate 1: Interview Check             │
+│   - INTENT.md exists and complete   │
+│   ✗ → "Run /intent-interview first" │
+└─────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────┐
+│ Gate 2: Critique Check              │
+│   - Has been critiqued              │
+│   - Re-critique if modified after   │
+│   ✗ → "Run /intent-critique"        │
+└─────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────┐
+│ Gate 3: Dependency Check            │
+│   - Prerequisites satisfied         │
+│   - Blocking intents are done       │
+│   ✗ → "Complete dependencies first" │
+└─────────────────────────────────────┘
+    ↓
+✓ All gates passed → Generate plan.md
+```
+
+### Gate Failure Examples
+
+```
+❌ Gate 1 Failed: Interview Incomplete
+   INTENT.md missing Structure section
+   Action: Run /intent-interview
+
+❌ Gate 2 Failed: Critique Required
+   INTENT.md modified after last critique (2026-01-15)
+   Action: Run /intent-critique
+
+❌ Gate 3 Failed: Dependencies Not Ready
+   Blocking: intent/auth-module/ (status: in_progress)
+   Action: Complete blocking tasks first
+```
+
 ## Output Files
 
 ### 1. plan.md

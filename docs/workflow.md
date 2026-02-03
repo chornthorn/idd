@@ -16,8 +16,8 @@ IDD (Intent-Driven Development) follows a structured workflow where **Intent is 
 │  │Assess│──────▶│Create│───────▶│Build │────────▶│ Sync │          │
 │  └──────┘       └──────┘        └──────┘         └──────┘          │
 │                                                                      │
-│  Is IDD right?   Write Intent    TDD execution    Keep in sync      │
-│  Setup project   Review quality  Agent team       Validate health   │
+│  Is IDD right?   Write Intent    Plan + TDD       Keep in sync      │
+│  Setup project   Review quality  Strict tests     Validate health   │
 │                  Approve sections                                    │
 └─────────────────────────────────────────────────────────────────────┘
 ```
@@ -122,64 +122,76 @@ See: [/intent-changes command](commands/intent-changes.md)
 
 ## Phase 3: Build
 
-### Step 3.1: Validate and Start Building
+### Step 3.1: Generate Execution Plan
 
-The key command that bridges Intent to implementation.
-
-```bash
-/intent-build-now
-```
-
-This command:
-1. **Validates** Intent completeness
-2. **Reports** any gaps that need fixing
-3. **Launches** the TDD agent team when ready
-
-See: [/intent-build-now command](commands/intent-build-now.md)
-
-### Step 3.2: TDD Agent Team Execution
-
-Once `/intent-build-now` validates your Intent, it orchestrates four specialized agents:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    TDD Agent Team                            │
-│                                                              │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │  idd-task-execution-master                          │    │
-│  │  Breaks Intent into phases with clear deliverables  │    │
-│  └─────────────────────┬───────────────────────────────┘    │
-│                        ▼                                     │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │  idd-test-master                                    │    │
-│  │  Designs comprehensive tests BEFORE implementation  │    │
-│  │  - Happy path, Bad path, Edge cases                 │    │
-│  │  - Security, Data leak, Data damage tests           │    │
-│  └─────────────────────┬───────────────────────────────┘    │
-│                        ▼                                     │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │  idd-code-guru                                      │    │
-│  │  Implements elegant code that passes all tests      │    │
-│  └─────────────────────┬───────────────────────────────┘    │
-│                        ▼                                     │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │  idd-e2e-test-queen                                 │    │
-│  │  Validates with end-to-end tests                    │    │
-│  └─────────────────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────────────────┘
-```
-
-See: [Agents Overview](agents/overview.md)
-
-### Alternative: Manual Planning
-
-If you prefer manual control, generate a plan without automatic execution:
+Transform your Intent into a structured, executable plan.
 
 ```bash
 /intent-plan
 ```
 
+This command:
+1. **Validates prerequisites** (interview, critique, dependencies)
+2. **Generates plan.md** with phased execution structure
+3. **Creates TASK.yaml** for execution tracking
+
+The plan includes:
+- **0-indexed phases** with clear deliverables
+- **6 test categories** per phase (Happy/Bad/Edge/Security/Data Leak/Data Damage)
+- **E2E Gate** per phase for verification
+- **Checkbox tracking** for progress
+
 See: [/intent-plan command](commands/intent-plan.md)
+
+### Step 3.2: Execute with TDD
+
+Once you have a plan, execute it with strict TDD discipline.
+
+```bash
+/intent-build-now    # Direct execution
+# or
+/swarm run           # With TaskSwarm (multi-agent)
+```
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Execution Flow                            │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  Read plan.md                                       │    │
+│  │  - Phases, tests, acceptance criteria               │    │
+│  └─────────────────────┬───────────────────────────────┘    │
+│                        ▼                                     │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  For each phase:                                    │    │
+│  │  1. Write ALL tests first (6 categories)           │    │
+│  │  2. Run tests (expect failure)                     │    │
+│  │  3. Implement code                                  │    │
+│  │  4. Run tests (expect pass)                        │    │
+│  │  5. Run E2E Gate verification                      │    │
+│  │  6. Update checkboxes, commit                      │    │
+│  └─────────────────────┬───────────────────────────────┘    │
+│                        ▼                                     │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  All phases complete                                │    │
+│  │  - Final E2E verification                          │    │
+│  │  - TASK.yaml status: review                        │    │
+│  └─────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Test Categories (All 6 Required):**
+
+| Category | Purpose |
+|----------|---------|
+| Happy Path | Normal expected usage |
+| Bad Path | Invalid inputs, error conditions |
+| Edge Cases | Boundary conditions |
+| Security | Vulnerability prevention |
+| Data Leak | Information exposure prevention |
+| Data Damage | Data integrity protection |
+
+See: [/intent-build-now command](commands/intent-build-now.md)
 
 ## Phase 4: Maintain
 
@@ -259,6 +271,6 @@ See: [/intent-story command](commands/intent-story.md)
 ## Next Steps
 
 - [Command Reference](commands/README.md) - Detailed documentation for each command
-- [Agent Documentation](agents/overview.md) - How the TDD agents work
 - [FAQ](faq.md) - Common questions and answers
 - [Intent Standard](intent-standard.md) - File format specification
+- [TaskSwarm](https://github.com/ArcBlock/teamswarm) - Autonomous task execution system
