@@ -7,63 +7,74 @@ description: Transform approved Intent into executable phased plan with strict T
 
 Transform an approved Intent into a structured, executable development plan with strict TDD discipline.
 
+**Output is TaskSwarm-compatible**: The generated plan.md can be directly executed by `/swarm run`.
+
 ## Core Principles
 
 1. **Test First, Always**: Every implementation step starts with writing tests
-2. **Phased Execution**: Break work into phases with clear deliverables
+2. **Phased Execution**: Break work into phases with clear deliverables (0-indexed)
 3. **Verification Gates**: Each phase ends with e2e validation
 4. **Automation Priority**: Prefer CLI/script testing over manual/browser testing
+5. **Checkbox Tracking**: All tests use `- [ ]` format for progress tracking
 
 ## Plan Structure
 
 ```
-Phase 1: [Phase Name]
-├── Step 1.1: [Feature/Component]
-│   ├── Unit 1: Write Tests
-│   │   ├── Happy path cases
-│   │   ├── Bad path cases (detailed, comprehensive)
-│   │   ├── Edge cases
-│   │   ├── Security vulnerability cases
-│   │   ├── Data leak cases
-│   │   └── Data damage cases
-│   └── Unit 2: Implementation
-│       └── Make all tests pass
-├── Step 1.2: [Next Feature]
-│   ├── Unit 1: Write Tests
-│   └── Unit 2: Implementation
-└── Phase Gate: E2E Verification
-    └── CLI/Script based validation
+## Phase 0: [Phase Name]
+├── ### Description
+├── ### Tests
+│   ├── #### Happy Path
+│   │   └── - [ ] test case 1
+│   ├── #### Bad Path (详尽列举)
+│   │   └── - [ ] error case 1
+│   ├── #### Edge Cases
+│   │   └── - [ ] boundary case 1
+│   ├── #### Security
+│   │   └── - [ ] vulnerability test 1
+│   ├── #### Data Leak
+│   │   └── - [ ] leak prevention test 1
+│   └── #### Data Damage
+│       └── - [ ] integrity test 1
+├── ### E2E Gate
+│   └── CLI/Script 验证命令
+└── ### Acceptance Criteria
+    └── - [ ] criterion 1
 
-Phase 2: [Phase Name]
+## Phase 1: [Phase Name]
 └── ...
 ```
 
-## Test Requirements
+## Test Categories (6 Required)
 
-### Unit 1: Test Writing (MUST come first)
+**Every phase MUST include tests from ALL 6 categories:**
 
-Every step begins with comprehensive test coverage:
-
-| Test Category | Description | Examples |
-|---------------|-------------|----------|
+| Category | Description | Examples |
+|----------|-------------|----------|
 | **Happy Path** | Normal expected usage | Valid inputs, correct sequences |
 | **Bad Path** | Invalid inputs, error conditions | Wrong types, missing required fields, invalid states |
 | **Edge Cases** | Boundary conditions | Empty inputs, max values, concurrent access |
 | **Security** | Vulnerability prevention | Injection attacks, auth bypass, privilege escalation |
-| **Data Leak** | Information exposure | Sensitive data in logs, error messages, responses |
-| **Data Damage** | Data integrity | Partial writes, corruption, race conditions |
+| **Data Leak** | Information exposure | Sensitive data in logs, error messages, API responses |
+| **Data Damage** | Data integrity protection | Partial writes, corruption, race conditions |
 
 **Bad cases must be detailed and comprehensive.** A good test suite has more failure tests than success tests.
 
-### Unit 2: Implementation
+### Test Writing Discipline
 
-- Only starts after tests are written
-- Goal: Make all tests pass
-- No new functionality without corresponding tests
+1. **Tests First**: Write ALL tests before any implementation
+2. **Red-Green-Refactor**: Run tests expecting failure, implement, verify pass
+3. **No Skip**: Every category must have at least one test case
 
-## Phase Gates: E2E Verification
+## Phase Gates: E2E Verification (Required)
 
-Each phase ends with end-to-end verification:
+**Each phase MUST end with E2E verification.** This is the gate that proves the phase is truly complete.
+
+### E2E Gate Requirements
+
+1. **Automatable**: Must be runnable via CLI/script, no manual steps
+2. **Independent**: Can run without human intervention
+3. **Reproducible**: Same inputs produce same outputs
+4. **Fast Feedback**: Fails quickly when something is wrong
 
 ### Preferred: CLI/Script Testing
 ```bash
@@ -77,11 +88,12 @@ psql -c "SELECT * FROM table WHERE condition"
 
 # Example: File system verification
 diff expected_output.json actual_output.json
+
+# Example: Unit test suite
+pnpm test -- --coverage
 ```
 
 ### For Web Projects: Automation-Friendly Design
-
-Design APIs and interfaces that support automated testing:
 
 ```
 DO:
@@ -110,129 +122,347 @@ Read Intent file
     ↓
 Analyze scope and complexity
     ↓
-Identify logical phases
+Identify logical phases (0-indexed)
     ↓
-Break each phase into steps
-    ↓
-For each step, define:
-    - Test categories needed
-    - Implementation scope
-    ↓
-Define phase gates (e2e criteria)
+For each phase, define:
+    - Description
+    - Tests (6 categories)
+    - E2E Gate
+    - Acceptance Criteria
     ↓
 Present plan for approval
     ↓
 User confirms or adjusts
     ↓
-Save plan to intent/PLAN.md
+Save to plan.md (same directory as INTENT.md)
+    ↓
+Create TASK.yaml (status: ready)
 ```
 
-## Output: PLAN.md Template
+## Output Files
+
+### 1. plan.md (Required)
 
 ```markdown
-# Implementation Plan for [Project/Feature]
-
-Generated from: `intent/[name]/INTENT.md`
-Date: YYYY-MM-DD
+# Execution Plan: {task_name}
 
 ## Overview
 
-- Total Phases: N
-- Estimated Complexity: [Low/Medium/High]
-- Key Dependencies: [List]
+简要说明这个任务要做什么。
 
-## Phase 1: [Phase Name]
+## Prerequisites
 
-**Goal**: [What this phase delivers]
+- 前置条件
+- 依赖的其他任务
+- 需要的权限或资源
 
-### Step 1.1: [Component/Feature Name]
+## Phase 0: {Phase Name}
 
-**Unit 1: Tests** (Do First)
+### Description
 
-| Category | Test Cases |
-|----------|------------|
-| Happy Path | - Case 1: [description] |
-|            | - Case 2: [description] |
-| Bad Path   | - Invalid input: [specific case] |
-|            | - Missing field: [specific case] |
-|            | - Wrong state: [specific case] |
-| Edge Cases | - Empty input |
-|            | - Maximum values |
-|            | - Concurrent access |
-| Security   | - SQL injection attempt |
-|            | - XSS attempt |
-|            | - Auth bypass attempt |
-| Data Leak  | - Sensitive data in error |
-|            | - Logs exposure |
-| Data Damage| - Partial write recovery |
-|            | - Race condition handling |
+这个阶段要完成什么，交付什么。
 
-**Unit 2: Implementation**
+### Tests
 
-- [ ] Implement [component]
-- [ ] Ensure all tests pass
-- [ ] Code review criteria: [specific points]
+#### Happy Path
+- [ ] 测试正常流程 1: {具体描述}
+- [ ] 测试正常流程 2: {具体描述}
 
-### Step 1.2: [Next Component]
+#### Bad Path
+- [ ] 无效输入: {具体场景}
+- [ ] 缺失必填字段: {具体场景}
+- [ ] 错误状态: {具体场景}
+- [ ] 类型错误: {具体场景}
 
-...
+#### Edge Cases
+- [ ] 空输入处理
+- [ ] 最大值边界
+- [ ] 并发访问
 
-### Phase 1 Gate: E2E Verification
+#### Security
+- [ ] 注入攻击防护: {具体场景}
+- [ ] 权限绕过防护: {具体场景}
+- [ ] 输入验证: {具体场景}
+
+#### Data Leak
+- [ ] 错误信息不泄露敏感数据
+- [ ] 日志不包含敏感信息
+- [ ] API 响应不过度暴露
+
+#### Data Damage
+- [ ] 部分写入恢复
+- [ ] 竞态条件处理
+- [ ] 事务完整性
+
+### E2E Gate
 
 ```bash
-# Verification script
-[CLI commands to verify phase completion]
+# Phase 完成验证脚本
+{CLI commands to verify phase completion}
 ```
 
-**Success Criteria**:
-- [ ] Criterion 1
-- [ ] Criterion 2
+### Acceptance Criteria
+
+- [ ] 所有 6 类测试通过
+- [ ] E2E Gate 验证通过
+- [ ] 代码已提交并 push
 
 ---
 
-## Phase 2: [Phase Name]
+## Phase 1: {Phase Name}
 
-...
+### Description
 
----
+下一阶段要完成什么。
 
-## Final Verification
+### Tests
+
+#### Happy Path
+- [ ] 测试正常流程
+
+#### Bad Path
+- [ ] 测试错误处理 1
+- [ ] 测试错误处理 2
+
+#### Edge Cases
+- [ ] 边界条件处理
+
+#### Security
+- [ ] 安全测试
+
+#### Data Leak
+- [ ] 泄露防护测试
+
+#### Data Damage
+- [ ] 数据完整性测试
+
+### E2E Gate
 
 ```bash
-# Full system verification script
+# Phase 1 验证脚本
+```
+
+### Acceptance Criteria
+
+- [ ] 所有测试通过
+- [ ] E2E Gate 验证通过
+
+---
+
+## Final E2E Verification
+
+```bash
+# 全系统端到端验证脚本
+# 验证所有 Phase 的功能协同工作
 ```
 
 ## Risk Mitigation
 
 | Risk | Mitigation | Contingency |
 |------|------------|-------------|
-| [Risk 1] | [How to prevent] | [If it happens] |
+| [风险 1] | [预防措施] | [发生时的应对] |
 
-## Notes
+## References
 
-- [Any additional context]
+- [相关 Intent](./INTENT.md)
+- [详细规格](./spec.md) (如果存在)
+- [设计文档](./design.md) (如果存在)
 ```
 
-## Integration with Other Skills
+### 2. TASK.yaml (Required)
+
+```yaml
+status: ready
+owner: null
+assignee: null
+phase: 0/{total_phases}
+updated: {UTC_ISO_TIMESTAMP}
+heartbeat: null
+```
+
+**Important**: `{total_phases}` is the number of phases in plan.md (0-indexed counting).
+
+## Integration with IDD & TaskSwarm
 
 ```
+IDD Flow:
 /intent-interview     # Create Intent
     ↓
 /intent-review        # Approve Intent
     ↓
-/intent-plan          # Generate execution plan (THIS SKILL)
+/intent-plan          # Generate plan.md + TASK.yaml (THIS SKILL)
     ↓
-[Execute: TDD cycles]
+TaskSwarm Flow:
+/swarm run            # Execute plan (TDD cycles)
+    ↓
+/swarm approve        # Human review
     ↓
 /intent-sync          # Write back confirmed details
-    ↓
-/intent-check         # Verify consistency
 ```
 
 ## Tips for Good Plans
 
-1. **Right-size phases**: Each phase should be completable in 1-3 days
-2. **Clear dependencies**: Note when steps depend on previous steps
-3. **Testable gates**: Phase gates must be automatable
-4. **Specific test cases**: "Test error handling" is bad; "Test 404 response when resource not found" is good
-5. **Security by default**: Include security tests even if not explicitly requested
+### Format (TaskSwarm Compatible)
+1. **0-indexed phases**: Phase 0, Phase 1, Phase 2...
+2. **Checkbox format**: All tests use `- [ ]` for progress tracking
+3. **E2E Gate per phase**: Each phase must have runnable verification
+
+### Test Quality
+4. **All 6 categories required**: Happy/Bad/Edge/Security/Data Leak/Data Damage
+5. **Bad Path > Happy Path**: More failure tests than success tests
+6. **Specific test cases**: "Test error handling" ✗ → "returns 404 when resource not found" ✓
+7. **Security by default**: Include even if not explicitly requested
+
+### Phase Design
+8. **Right-size phases**: Each phase completable in 1-3 days
+9. **Clear dependencies**: Note when phases depend on previous phases
+10. **Automatable gates**: E2E Gate must be runnable via CLI, no manual steps
+
+## Example: Complete Output
+
+For an Intent at `intent/session-protocol/INTENT.md`:
+
+**Creates**: `intent/session-protocol/plan.md`
+```markdown
+# Execution Plan: session-protocol
+
+## Overview
+
+实现 Session Protocol 的 Frame 编解码功能。
+
+## Prerequisites
+
+- @aigne/afs 包已存在
+- TypeScript 环境配置完成
+
+## Phase 0: Frame Encoding
+
+### Description
+
+实现 Frame 的编码函数，将结构化数据转换为二进制格式。
+
+### Tests
+
+#### Happy Path
+- [ ] encodes empty frame correctly
+- [ ] encodes frame with JSON payload
+- [ ] encodes frame with binary payload
+- [ ] preserves ReqId across encode/decode
+
+#### Bad Path
+- [ ] throws on invalid frame type
+- [ ] throws on payload exceeding max size
+- [ ] throws on null payload when required
+- [ ] throws on negative ReqId
+- [ ] throws on non-integer frame type
+
+#### Edge Cases
+- [ ] handles empty string payload
+- [ ] handles maximum allowed payload size (64KB)
+- [ ] handles unicode in JSON payload
+- [ ] handles zero-length binary payload
+
+#### Security
+- [ ] rejects frames with potential injection patterns
+- [ ] validates frame type bounds (0-255)
+- [ ] sanitizes string inputs before encoding
+
+#### Data Leak
+- [ ] error messages don't expose internal structure
+- [ ] stack traces not included in thrown errors
+
+#### Data Damage
+- [ ] atomic write: partial encode doesn't corrupt buffer
+- [ ] buffer overflow protection
+
+### E2E Gate
+
+```bash
+# Verify encoding works end-to-end
+pnpm test -- --grep "Frame Encoding"
+pnpm test:e2e -- --grep "encode"
+```
+
+### Acceptance Criteria
+
+- [ ] 所有 6 类测试通过
+- [ ] E2E Gate 验证通过
+- [ ] 100% 分支覆盖率
+- [ ] 代码已提交
+
+---
+
+## Phase 1: Frame Decoding
+
+### Description
+
+实现 Frame 的解码函数，将二进制数据解析为结构化对象。
+
+### Tests
+
+#### Happy Path
+- [ ] decodes valid frame correctly
+- [ ] handles streaming decode
+- [ ] decodes all frame types
+
+#### Bad Path
+- [ ] throws on truncated frame
+- [ ] throws on corrupted header
+- [ ] throws on invalid magic bytes
+- [ ] throws on unsupported version
+
+#### Edge Cases
+- [ ] handles minimum valid frame
+- [ ] handles maximum valid frame
+- [ ] handles back-to-back frames in stream
+
+#### Security
+- [ ] validates frame length before allocation
+- [ ] rejects oversized frames (DoS protection)
+
+#### Data Leak
+- [ ] doesn't expose raw bytes in error messages
+
+#### Data Damage
+- [ ] partial decode doesn't advance stream position
+- [ ] corrupted frame doesn't affect subsequent frames
+
+### E2E Gate
+
+```bash
+# Verify full roundtrip
+pnpm test -- --grep "Frame"
+echo '{"test":1}' | node scripts/encode-decode-test.js
+```
+
+### Acceptance Criteria
+
+- [ ] 所有测试通过
+- [ ] E2E roundtrip 验证通过
+- [ ] 代码已提交
+
+---
+
+## Final E2E Verification
+
+```bash
+# Full integration test
+pnpm test
+pnpm test:e2e
+```
+
+## References
+
+- [Intent](./INTENT.md)
+- [Spec](./spec.md)
+```
+
+**Creates**: `intent/session-protocol/TASK.yaml`
+```yaml
+status: ready
+owner: null
+assignee: null
+phase: 0/2
+updated: 2026-01-27T10:00:00Z
+heartbeat: null
+```

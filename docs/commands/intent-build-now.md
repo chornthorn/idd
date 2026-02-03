@@ -1,52 +1,27 @@
 # /intent-build-now
 
-> Validate Intent completeness and launch TDD execution
+> Validate Intent completeness and start TDD execution
 
 ## Usage
 
 ```bash
 /intent-build-now
-/intent-build-now path/to/INTENT.md
+/intent-build-now path/to/intent-directory
 ```
 
 ## Purpose
 
 The bridge between Intent and implementation. This command:
 
-1. **Validates** Intent completeness and quality
+1. **Validates** Intent and plan.md completeness
 2. **Reports** any gaps that need fixing
-3. **Launches** the TDD agent team when ready
+3. **Delegates** to TaskSwarm (if available) or executes directly
 
 ## When to Use
 
 - Intent is approved and ready for implementation
+- plan.md has been generated via `/intent-plan`
 - After `/intent-review` has locked key sections
-- When you want AI to take over the build process
-
-## Validation Checks
-
-### Required Sections
-
-| Section | Why Required |
-|---------|--------------|
-| **Responsibilities** | Defines scope for agents |
-| **Structure** | Guides architecture decisions |
-| **API** | Contracts for test design |
-
-### Quality Checks
-
-| Check | Criteria |
-|-------|----------|
-| **Clarity** | No ambiguous terms |
-| **Testability** | Examples map to assertions |
-| **Boundaries** | Clear "what it doesn't do" |
-| **Dependencies** | External deps listed |
-
-### For Multi-Module Projects
-
-- `intent/architecture/DEPENDENCIES.md` exists
-- Module dependency graph defined
-- No circular dependencies
 
 ## Execution Flow
 
@@ -55,16 +30,16 @@ The bridge between Intent and implementation. This command:
 │                   /intent-build-now                          │
 │                                                              │
 │  ┌──────────────────────────────────────────────────────┐   │
-│  │ Step 1: Locate Intent                                │   │
-│  │ - Check intent/INTENT.md                             │   │
-│  │ - Check current directory                            │   │
-│  │ - Use provided path                                  │   │
+│  │ Step 1: Locate Files                                 │   │
+│  │ - INTENT.md                                          │   │
+│  │ - plan.md (required)                                 │   │
+│  │ - TASK.yaml (optional)                               │   │
 │  └────────────────────────┬─────────────────────────────┘   │
 │                           ▼                                  │
 │  ┌──────────────────────────────────────────────────────┐   │
 │  │ Step 2: Validate Completeness                        │   │
 │  │ - Check required sections                            │   │
-│  │ - Verify quality criteria                            │   │
+│  │ - Verify plan.md has phases + tests                  │   │
 │  │ - Assess readiness                                   │   │
 │  └────────────────────────┬─────────────────────────────┘   │
 │                           │                                  │
@@ -73,51 +48,99 @@ The bridge between Intent and implementation. This command:
 │  ┌───────────────────┐     ┌───────────────────────────┐   │
 │  │ INCOMPLETE        │     │ READY                     │   │
 │  │                   │     │                           │   │
-│  │ Show gaps         │     │ Launch TDD Agent Team     │   │
-│  │ Explain fixes     │     │ - task-execution-master   │   │
-│  │ Recommend actions │     │ - test-master             │   │
-│  └───────────────────┘     │ - code-guru               │   │
-│                            │ - e2e-test-queen          │   │
-│                            └───────────────────────────┘   │
+│  │ Show gaps         │     │ Has TaskSwarm?            │   │
+│  │ Recommend:        │     │   Yes → /swarm run        │   │
+│  │ /intent-plan      │     │   No  → Execute directly  │   │
+│  └───────────────────┘     └───────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Example: Ready to Build
+## Validation Checks
+
+### Required Files
+
+| File | Purpose |
+|------|---------|
+| **INTENT.md** | Intent document |
+| **plan.md** | Execution plan with test matrix |
+
+### INTENT.md Checks
+
+| Check | Criteria |
+|-------|----------|
+| **Responsibilities** | Scope defined |
+| **Structure** | ASCII diagram present |
+| **API** | Function signatures |
+
+### plan.md Checks
+
+| Check | Criteria |
+|-------|----------|
+| **Phase Structure** | Has `## Phase 0:` sections |
+| **Test Matrix** | 6 categories per phase |
+| **E2E Gate** | Each phase has verification |
+| **Checkboxes** | Uses `- [ ]` format |
+
+## Example: Ready with TaskSwarm
 
 ```
 > /intent-build-now
 
-Locating Intent...
+Locating files...
 Found: intent/auth/INTENT.md
+Found: intent/auth/plan.md
+Found: intent/auth/TASK.yaml
 
-Validating completeness...
+Validating...
 
 ## Intent Validation: PASSED ✓
 
-Your Intent is ready for implementation:
+✓ INTENT.md complete
+✓ plan.md has 3 phases, 47 tests
+✓ E2E Gates defined
+✓ TASK.yaml present
 
-✓ Responsibilities defined
-✓ Structure documented (ASCII diagram found)
-✓ API signatures clear (3 functions)
-✓ Examples provided (5 cases)
-✓ Dependencies listed
+TaskSwarm detected. Delegating execution...
 
-Launching idd-task-execution-master...
+Your Intent is ready. Run:
 
-## Execution Plan
+    /swarm run auth
 
-### Phase 1: Core Authentication
-- Task 1.1: Token validation
-- Task 1.2: Token generation
-- Task 1.3: Refresh token rotation
+Or for continuous execution:
 
-### Phase 2: Integration
-- Task 2.1: Middleware implementation
-- Task 2.2: Error handling
+    /swarm run-all
+```
 
-Starting Phase 1...
+## Example: Ready without TaskSwarm
 
-[TDD agents take over]
+```
+> /intent-build-now
+
+Locating files...
+Found: intent/payment/INTENT.md
+Found: intent/payment/plan.md
+No TASK.yaml found
+
+Validating...
+
+## Intent Validation: PASSED ✓
+
+✓ INTENT.md complete
+✓ plan.md has 2 phases, 28 tests
+
+No TaskSwarm detected. Executing directly...
+
+Starting Phase 0: Payment Validation
+
+#### Happy Path
+- [ ] validates correct amount format
+→ Writing test...
+→ Running test (expect RED)...
+→ Implementing...
+→ Running test (expect GREEN)...
+- [x] validates correct amount format ✓
+
+[TDD loop continues...]
 ```
 
 ## Example: Not Ready
@@ -125,87 +148,56 @@ Starting Phase 1...
 ```
 > /intent-build-now
 
-Locating Intent...
+Locating files...
 Found: intent/payment/INTENT.md
-
-Validating completeness...
+Missing: plan.md
 
 ## Intent Validation: NEEDS WORK
 
-Your Intent is missing critical elements:
+❌ plan.md not found
 
-### Missing Sections
+Run /intent-plan first to generate the execution plan:
 
-❌ **Structure** - No ASCII diagram found
+    /intent-plan intent/payment/
 
-Add a component diagram:
-\```markdown
-## Structure
-
-\```
-ComponentA ──▶ ComponentB
-     │
-     ▼
-ComponentC
-\```
-\```
-
-❌ **API** - Function signatures incomplete
-
-Define parameters and returns:
-\```markdown
-## API
-
-### processPayment(amount, currency)
-
-**Parameters:**
-- amount: number - Payment amount in cents
-- currency: string - ISO currency code
-
-**Returns:** PaymentResult
-
-**Errors:**
-- InvalidAmount: When amount <= 0
-\```
-
-### Quality Issues
-
-⚠ **Ambiguous term found:** "handles payments"
-→ Specify: validate? process? record?
-
-⚠ **No examples section**
-→ Add input/output examples
-
-### Recommended Actions
-
-1. Add Structure section with ASCII diagram
-2. Complete API signatures
-3. Add Examples section
-4. Run `/intent-build-now` again
-
-**Do not proceed with implementation until Intent is complete.**
+This will create:
+- plan.md (execution plan with test matrix)
+- TASK.yaml (for TaskSwarm integration)
 ```
 
-## TDD Agent Team
+## TaskSwarm Integration
 
-When validation passes, these agents are orchestrated:
+When TASK.yaml exists and TaskSwarm is available:
 
-| Agent | Role |
-|-------|------|
-| `idd-task-execution-master` | Creates phased execution plan |
-| `idd-test-master` | Designs tests before implementation |
-| `idd-code-guru` | Implements code to pass tests |
-| `idd-e2e-test-queen` | Validates with E2E tests |
+| Feature | Benefit |
+|---------|---------|
+| **Atomic claiming** | No conflicts with other agents |
+| **Heartbeat** | Automatic stale task recovery |
+| **Multi-agent** | Parallel execution across machines |
+| **Progress tracking** | Checkbox updates in plan.md |
 
-See: [Agents Overview](../agents/overview.md)
+## Direct Execution (No TaskSwarm)
+
+When executing directly, follows strict TDD:
+
+1. Read Tests section from plan.md
+2. For each unchecked test `- [ ]`:
+   - Write test code
+   - Run test → expect RED
+   - Implement code
+   - Run test → expect GREEN
+   - Update: `- [ ]` → `- [x]`
+3. Run E2E Gate script
+4. Git commit
+5. Continue to next Phase
 
 ## Related Commands
 
+- [/intent-plan](intent-plan.md) - Generate plan.md
 - [/intent-review](intent-review.md) - Approve sections before build
-- [/intent-plan](intent-plan.md) - Manual planning alternative
 - [/intent-sync](intent-sync.md) - Sync back after build
 
 ## See Also
 
 - [IDD Workflow](../workflow.md) - Build phase in context
-- [Agents Documentation](../agents/) - How agents work
+- [TaskSwarm](https://github.com/ArcBlock/teamswarm) - Autonomous execution

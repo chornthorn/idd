@@ -1,6 +1,6 @@
 # /intent-plan
 
-> Generate phased execution plan with strict TDD
+> Generate TaskSwarm-compatible execution plan with strict TDD
 
 ## Usage
 
@@ -11,41 +11,60 @@
 
 ## Purpose
 
-Transforms an approved Intent into a structured, executable development plan with strict TDD discipline. Unlike `/intent-build-now`, this generates a plan for manual execution rather than automatic agent orchestration.
+Transforms an approved Intent into a structured, executable development plan. The output is **TaskSwarm-compatible** and can be directly executed by `/swarm run`.
 
-## When to Use
+## Output Files
 
-- Want to review the plan before execution
-- Prefer manual control over implementation
-- Need to share plan with team
-- Learning IDD workflow step by step
+### 1. plan.md
+
+Execution plan containing:
+- Phase structure (0-indexed)
+- 6-category test matrix per phase
+- E2E Gate verification scripts
+- Checkbox tracking (`- [ ]`)
+
+### 2. TASK.yaml
+
+TaskSwarm status file:
+```yaml
+status: ready
+owner: null
+assignee: null
+phase: 0/N
+updated: 2024-01-21T10:00:00Z
+heartbeat: null
+```
 
 ## Plan Structure
 
 ```
-Phase 1: [Phase Name]
-├── Step 1.1: [Feature/Component]
-│   ├── Unit 1: Write Tests
-│   │   ├── Happy path cases
-│   │   ├── Bad path cases
-│   │   ├── Edge cases
-│   │   ├── Security tests
-│   │   ├── Data leak tests
-│   │   └── Data damage tests
-│   └── Unit 2: Implementation
-│       └── Make all tests pass
-├── Step 1.2: [Next Feature]
-│   └── ...
-└── Phase Gate: E2E Verification
-    └── CLI/Script based validation
+## Phase 0: [Phase Name]
+├── ### Description
+├── ### Tests
+│   ├── #### Happy Path
+│   │   └── - [ ] test case 1
+│   ├── #### Bad Path
+│   │   └── - [ ] error case 1
+│   ├── #### Edge Cases
+│   │   └── - [ ] boundary case 1
+│   ├── #### Security
+│   │   └── - [ ] vulnerability test 1
+│   ├── #### Data Leak
+│   │   └── - [ ] leak prevention test 1
+│   └── #### Data Damage
+│       └── - [ ] integrity test 1
+├── ### E2E Gate
+│   └── CLI/Script verification
+└── ### Acceptance Criteria
+    └── - [ ] criterion 1
 
-Phase 2: [Phase Name]
+## Phase 1: [Phase Name]
 └── ...
 ```
 
-## Test Categories
+## Test Categories (All 6 Required)
 
-Every step requires comprehensive test coverage:
+Every phase MUST include tests from all categories:
 
 | Category | Purpose | Examples |
 |----------|---------|----------|
@@ -56,135 +75,155 @@ Every step requires comprehensive test coverage:
 | **Data Leak** | Information exposure | Sensitive data in logs |
 | **Data Damage** | Data integrity | Partial writes, corruption |
 
-## Output: PLAN.md
-
-```markdown
-# Implementation Plan for [Project/Feature]
-
-Generated from: `intent/[name]/INTENT.md`
-Date: 2024-01-21
-
-## Overview
-
-- Total Phases: 3
-- Complexity: Medium
-- Key Dependencies: auth-service, database
-
-## Phase 1: Core Functionality
-
-**Goal**: Basic payment processing works
-
-### Step 1.1: Payment Validation
-
-**Unit 1: Tests** (Do First)
-
-| Category | Test Cases |
-|----------|------------|
-| Happy Path | Valid amount processes successfully |
-| Bad Path | Negative amount rejected |
-| Bad Path | Zero amount rejected |
-| Edge Cases | Maximum amount (system limit) |
-| Security | SQL injection in metadata |
-| Data Leak | Card number not in logs |
-
-**Unit 2: Implementation**
-
-- [ ] Implement validatePayment()
-- [ ] Ensure all tests pass
-
-### Step 1.2: Payment Processing
-
-[...]
-
-### Phase 1 Gate: E2E Verification
-
-\```bash
-# Verify payment flow
-curl -X POST http://localhost:3000/api/payments \
-  -H "Content-Type: application/json" \
-  -d '{"amount": 1000, "currency": "USD"}' | jq .
-\```
-
-**Success Criteria:**
-- [ ] Payment created successfully
-- [ ] Correct status returned
-- [ ] Database record exists
-
----
-
-## Phase 2: Error Handling
-
-[...]
-```
+**Bad cases must be detailed and comprehensive.** More failure tests than success tests.
 
 ## Example Session
 
 ```
-> /intent-plan intent/payment/INTENT.md
+> /intent-plan intent/payment/
 
 Reading Intent...
 Analyzing scope and complexity...
+Generating phases...
 
 ## Execution Plan Generated
 
-### Phase Overview
+### Overview
+- Total Phases: 2
+- Total Tests: 28
+- E2E Gates: 2
 
-| Phase | Objective | Tasks |
-|-------|-----------|-------|
-| 1 | Core Processing | 3 |
-| 2 | Error Handling | 2 |
-| 3 | Integration | 2 |
+### Phase 0: Payment Validation
+- 15 test cases across 6 categories
+- E2E: CLI payment validation script
 
-### Phase 1: Core Processing
+### Phase 1: Payment Processing
+- 13 test cases across 6 categories
+- E2E: Full transaction verification
 
-Step 1.1: Payment Validation
-- 12 test cases identified
-- Implementation scope: 1 file
-
-Step 1.2: Payment Execution
-- 8 test cases identified
-- Implementation scope: 2 files
-
-Step 1.3: Receipt Generation
-- 6 test cases identified
-- Implementation scope: 1 file
-
-Phase Gate: Verify via CLI that a payment can be processed
-
-[Full plan continues...]
-
-Plan saved to: intent/payment/PLAN.md
+Files created:
+- intent/payment/plan.md
+- intent/payment/TASK.yaml (status: ready)
 
 Next steps:
-1. Review the plan
-2. Start Phase 1, Step 1.1
-3. Write tests first, then implement
-4. Run phase gate verification before Phase 2
+1. Review plan.md
+2. Run /swarm run payment (with TaskSwarm)
+   Or /intent-build-now (without TaskSwarm)
+```
+
+## Example Output: plan.md
+
+```markdown
+# Execution Plan: payment
+
+## Overview
+
+实现支付验证和处理功能。
+
+## Prerequisites
+
+- 数据库连接配置完成
+- 支付网关 API 密钥已配置
+
+## Phase 0: Payment Validation
+
+### Description
+
+实现支付金额和参数验证。
+
+### Tests
+
+#### Happy Path
+- [ ] validates correct amount format
+- [ ] accepts valid currency codes
+- [ ] accepts valid card token
+
+#### Bad Path
+- [ ] rejects negative amount
+- [ ] rejects zero amount
+- [ ] rejects invalid currency
+- [ ] rejects expired card token
+
+#### Edge Cases
+- [ ] handles maximum amount (system limit)
+- [ ] handles minimum amount (1 cent)
+
+#### Security
+- [ ] rejects SQL injection in metadata
+- [ ] validates input length limits
+
+#### Data Leak
+- [ ] card number not in error messages
+- [ ] card number not in logs
+
+#### Data Damage
+- [ ] validation failure doesn't create partial record
+
+### E2E Gate
+
+```bash
+# Verify validation works
+curl -X POST http://localhost:3000/api/payments/validate \
+  -H "Content-Type: application/json" \
+  -d '{"amount": 1000, "currency": "USD"}' | jq .
+
+# Verify rejection
+curl -X POST http://localhost:3000/api/payments/validate \
+  -d '{"amount": -100}' | jq .status  # Should be "error"
+```
+
+### Acceptance Criteria
+
+- [ ] 所有 6 类测试通过
+- [ ] E2E Gate 验证通过
+- [ ] 代码已提交
+
+---
+
+## Phase 1: Payment Processing
+
+[...]
+```
+
+## Integration with TaskSwarm
+
+```
+/intent-plan
+    ↓
+Generates plan.md + TASK.yaml
+    ↓
+/swarm run
+    ↓
+TaskSwarm executes TDD phases
+    ↓
+Checkboxes updated: - [ ] → - [x]
+    ↓
+Git commits after each phase
 ```
 
 ## vs /intent-build-now
 
 | Aspect | /intent-plan | /intent-build-now |
 |--------|--------------|-------------------|
-| Output | PLAN.md file | Automatic execution |
-| Control | Manual | Agent-driven |
-| Use case | Review first | Trust the process |
-| Learning | Better for beginners | Better for experienced |
+| Output | plan.md + TASK.yaml | Validates then executes |
+| Use case | Generate plan first | Start execution now |
+| Review | Plan review before execution | Immediate start |
 
 ## Best Practices
 
-1. **Right-size phases** - Each completable in 1-3 days
-2. **Clear dependencies** - Note step prerequisites
-3. **Specific test cases** - "Test 404 response" not "test errors"
-4. **Automatable gates** - CLI verification preferred
+1. **0-indexed phases** - Phase 0, Phase 1, Phase 2...
+2. **Checkbox format** - All tests use `- [ ]`
+3. **Specific test cases** - "rejects negative amount" not "test errors"
+4. **E2E Gate per phase** - Must be runnable via CLI
+5. **Bad Path > Happy Path** - More failure tests than success tests
 
 ## Related Commands
 
-- [/intent-build-now](intent-build-now.md) - Automatic execution
+- [/intent-build-now](intent-build-now.md) - Validate and execute
 - [/intent-review](intent-review.md) - Approve before planning
 - [/intent-sync](intent-sync.md) - Sync after execution
 
 ## See Also
 
 - [IDD Workflow](../workflow.md) - Planning in context
-- [Agents Overview](../agents/overview.md) - TDD agent team
+- [TaskSwarm](https://github.com/ArcBlock/teamswarm) - Autonomous execution

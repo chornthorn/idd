@@ -1,142 +1,157 @@
 ---
 name: intent-build-now
-description: Start implementation from Intent. First validates Intent completeness, then launches idd-task-execution-master agent to plan and execute TDD-based development phases. Use when you have an Intent ready and want to start building.
+description: Start implementation from Intent. Validates Intent completeness, then either delegates to TaskSwarm (if available) or executes TDD phases directly. Use when you have an Intent ready and want to start building.
 ---
 
 # Intent Build Now
 
-Start building from Intent with strict validation and TDD discipline.
+Start building from Intent. Validates completeness, then chooses execution path.
 
 ## Workflow
 
 ```
-/intent-build-now
+/intent-build-now [path]
        ↓
-Locate Intent file
+Locate Intent + plan.md
        ↓
-Validate completeness ──→ Incomplete? ──→ Show gaps & how to fix
+Validate completeness ──→ Incomplete? ──→ Show gaps, suggest /intent-plan
        ↓
-Ready to build
-       ↓
-Launch idd-task-execution-master agent
-       ↓
-Phase-by-phase TDD execution
+Check for TaskSwarm
+       │
+       ├── Has TaskSwarm + TASK.yaml ──→ Delegate to /swarm run
+       │
+       └── No TaskSwarm ──→ Execute TDD phases directly
 ```
 
-## Step 1: Locate Intent
+## Step 1: Locate Files
 
-Search for Intent file in order:
-1. `intent/INTENT.md` (project root)
-2. `INTENT.md` (current directory)
-3. User-specified path
+Search for Intent files in order:
+1. User-specified path
+2. `intent/{name}/` directories
+3. Current directory
 
-If not found, advise user to run `/intent-interview` first.
+Required files:
+- `INTENT.md` - The intent document
+- `plan.md` - Execution plan with test matrix
+
+Optional:
+- `TASK.yaml` - TaskSwarm status file
+
+If `plan.md` missing:
+```
+plan.md not found.
+
+Run /intent-plan first to generate the execution plan.
+```
 
 ## Step 2: Validate Intent Completeness
 
-### Required Sections
-
-Check for these essential sections:
+### Required Sections in INTENT.md
 
 | Section | Purpose | How to Fix |
 |---------|---------|------------|
 | **Responsibilities** | What it does / doesn't do | Use `/intent-interview` to clarify scope |
 | **Structure** | ASCII diagram of components | Add `## Structure` with ASCII diagram |
-| **API** | Function signatures with params/returns | Define key interfaces in `## API` |
+| **API** | Function signatures | Define key interfaces in `## API` |
 
-### Quality Checks
+### Required in plan.md
 
-| Check | Criteria | If Missing |
-|-------|----------|------------|
-| **Clarity** | No ambiguous terms | Replace vague terms with specifics |
-| **Testability** | Behaviors map to assertions | Add concrete examples with input → output |
-| **Boundaries** | Clear scope limits | Add "What it doesn't do" list |
-| **Dependencies** | External deps listed | Add `## Dependencies` section |
-
-### Multi-Module Projects
-
-For projects with multiple modules, also check:
-- `intent/architecture/DEPENDENCIES.md` exists
-- Module dependency graph is defined
-- No circular dependencies
-
-## Step 3: Report Readiness
-
-### If Ready
-
-```markdown
-## Intent Validation: PASSED ✓
-
-Your Intent is ready for implementation:
-- ✓ Responsibilities defined
-- ✓ Structure documented
-- ✓ API signatures clear
-- ✓ Examples provided
-
-Launching idd-task-execution-master to plan phases...
-```
-
-Then use Task tool to launch `idd-task-execution-master` agent with the Intent content.
+| Check | Criteria |
+|-------|----------|
+| **Phases** | Has `## Phase 0:` or more phases |
+| **Tests** | Each phase has 6 test categories |
+| **E2E Gate** | Each phase has `### E2E Gate` |
+| **Checkboxes** | Uses `- [ ]` format |
 
 ### If Not Ready
 
 ```markdown
 ## Intent Validation: NEEDS WORK
 
-Your Intent is missing critical elements:
+Missing elements:
 
-### Missing Sections
+1. **plan.md missing E2E Gate for Phase 1**
+   - Add `### E2E Gate` with verification script
 
-1. **Structure** - Add ASCII diagram showing component relationships
-   ```
-   ## Structure
+2. **plan.md Phase 0 missing Data Leak tests**
+   - Add `#### Data Leak` section with test cases
 
-   \```
-   ComponentA ──→ ComponentB
-        │
-        ▼
-   ComponentC
-   \```
-   ```
-
-2. **API** - Define key function signatures
-   ```
-   ## API
-
-   ### functionName(param1, param2)
-
-   **Parameters:**
-   - param1: type - description
-
-   **Returns:** type - description
-   ```
-
-### Recommended Actions
-
-1. Run `/intent-interview` to refine the Intent
-2. Add missing sections manually
-3. Run `/intent-build-now` again when ready
-
-**Do not proceed with implementation until Intent is complete.**
+Run /intent-plan to regenerate, or fix manually.
 ```
 
-## Step 4: Launch Execution
+## Step 3: Choose Execution Path
 
-When Intent passes validation, use the Task tool:
+### Path A: TaskSwarm Available
+
+Detect TaskSwarm by checking:
+1. `TASK.yaml` exists in intent directory
+2. TaskSwarm plugin is installed (check for `/swarm` skill)
+
+If both conditions met:
+```markdown
+## Intent Validation: PASSED ✓
+
+TaskSwarm detected. Delegating execution...
+
+Your Intent is ready. Run:
+
+    /swarm run {task_name}
+
+Or for continuous execution:
+
+    /swarm run-all
+
+TaskSwarm will:
+- Claim the task atomically
+- Execute phases with TDD discipline
+- Update checkboxes in plan.md
+- Commit after each phase
+- Push to remote
+```
+
+**Do NOT execute phases yourself when TaskSwarm is available.**
+
+### Path B: No TaskSwarm (Direct Execution)
+
+If TaskSwarm not available:
+```markdown
+## Intent Validation: PASSED ✓
+
+No TaskSwarm detected. Executing directly...
+
+Starting Phase 0: {phase_name}
+```
+
+Then execute TDD loop for each phase:
 
 ```
-Task: idd-task-execution-master
+For each Phase:
+  1. Read ### Tests section
+  2. For each unchecked test `- [ ]`:
+     a. Write test code (if not exists)
+     b. Run test → expect failure (red)
+     c. Write implementation
+     d. Run test → expect pass (green)
+     e. Update plan.md: `- [ ]` → `- [x]`
+  3. Run E2E Gate script
+  4. Git commit: "feat({scope}): Phase {n} - {phase_name}"
+  5. Continue to next Phase
+```
 
-Prompt: "Here is the approved Intent for [project name].
-Please create a phased execution plan following strict TDD:
+## Step 4: Completion
 
-[Full Intent content]
+After all phases complete:
 
-Requirements:
-1. Break into logical phases
-2. Each task: tests first, then implementation
-3. Define completion criteria for each phase
-4. Plan E2E verification gates"
+```markdown
+## Build Complete ✓
+
+All phases executed:
+- Phase 0: {name} ✓
+- Phase 1: {name} ✓
+
+Next steps:
+- Run /intent-sync to update Intent with confirmed details
+- Run /intent-check to verify consistency
 ```
 
 ## Integration
@@ -144,37 +159,55 @@ Requirements:
 ```
 /intent-interview     # Create Intent from scratch
     ↓
-/intent-critique      # Review for over-engineering
-    ↓
 /intent-review        # Section-by-section approval
     ↓
-/intent-build-now     # THIS SKILL - Validate & start building
+/intent-plan          # Generate plan.md + TASK.yaml
     ↓
-[idd-task-execution-master plans phases]
+/intent-build-now     # THIS SKILL
     ↓
-[idd-test-master designs tests]
-    ↓
-[idd-code-guru implements]
-    ↓
-[idd-e2e-test-queen validates]
+┌───────────────────────────────────────┐
+│  Has TaskSwarm?                       │
+│    Yes → /swarm run (delegate)        │
+│    No  → Execute TDD directly         │
+└───────────────────────────────────────┘
     ↓
 /intent-sync          # Sync confirmed details back
 ```
 
-## Agent Coordination
+## TDD Execution Standards (Direct Mode)
 
-This skill orchestrates the IDD agent team:
+When executing without TaskSwarm, follow strict TDD:
 
-| Agent | Role | When Called |
-|-------|------|-------------|
-| `idd-task-execution-master` | Phase planning | After Intent validation passes |
-| `idd-test-master` | Test design | Called by task-execution-master per task |
-| `idd-code-guru` | Implementation | After tests are designed |
-| `idd-e2e-test-queen` | E2E verification | After phase completion |
+### Test Categories (All 6 Required)
+
+1. **Happy Path** - Normal expected usage
+2. **Bad Path** - Invalid inputs, error conditions
+3. **Edge Cases** - Boundary conditions
+4. **Security** - Vulnerability prevention
+5. **Data Leak** - Information exposure prevention
+6. **Data Damage** - Data integrity protection
+
+### TDD Discipline
+
+- **Tests First**: Write ALL tests before implementation
+- **Red-Green-Refactor**: Verify test fails, implement, verify pass
+- **No Skip**: Every checkbox must be completed
+- **Commit Per Phase**: One commit after each phase passes
+
+### E2E Gate Enforcement
+
+Each phase's E2E Gate script MUST pass before proceeding:
+```bash
+# Run the E2E Gate script from plan.md
+# Example: pnpm test -- --grep "Phase 0"
+
+# If fails: Stop and fix
+# If passes: Continue to next phase
+```
 
 ## Tips
 
-1. **Don't rush validation** - An incomplete Intent leads to rework
-2. **ASCII diagrams are mandatory** - They prevent misunderstandings
-3. **Examples are tests** - Every example becomes a test case
-4. **Boundaries prevent scope creep** - Be explicit about what's NOT included
+1. **Prefer TaskSwarm** - It handles concurrency, heartbeat, and recovery
+2. **Don't force incomplete Intents** - Missing plan.md means not ready
+3. **Respect checkboxes** - They're the source of truth for progress
+4. **Commit frequently** - One commit per phase, not one mega-commit
