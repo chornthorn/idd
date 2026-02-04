@@ -94,8 +94,14 @@ See [docs/methodology.md](docs/methodology.md) for detailed comparison.
 npx add-skill arcblock/idd
 
 # Or manual install
-git clone https://github.com/ArcBlock/idd ~/path/to/idd
-claude mcp add-plugin ~/path/to/idd
+# Add marketplace from GitHub
+/plugin marketplace add git@github.com:ArcBlock/idd.git
+# claude plugin marketplace add git@github.com:ArcBlock/idd.git
+
+# Install the plugin
+/plugin install idd
+# claude plugin install idd
+
 ```
 
 ## Commands
