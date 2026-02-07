@@ -31,11 +31,31 @@ model: inherit
 
 | 检查项 | 必须 | 说明 |
 |--------|------|------|
+| Anchor | ✓ | 标题后紧跟 `> Anchor:` 或 `>` 一句话锚点声明 |
 | 状态头 | ✓ | 包含 "状态" 和 "最后更新" |
 | 职责 | ✓ | 明确 "做什么" |
 | 非目标 | ✓ | 明确 "不做什么" |
 | 数据结构 | - | 如有数据，需定义 |
 | API | - | 如有接口，需定义 |
+
+### 1.5 Size Budget
+
+| 检查项 | 必须 | 说明 |
+|--------|------|------|
+| 模块级行数 | ✓ | ≤ 150 行（排除 frontmatter） |
+| 项目级行数 | ✓ | ≤ 300 行（排除 frontmatter） |
+
+超出 budget 时输出 warning：
+
+```
+⚠️ Size Budget Exceeded
+- File: src/core/intent/INTENT.md
+- Level: module
+- Current: 187 lines
+- Budget: 150 lines
+- Over by: 37 lines (25%)
+- Action: Run /intent-critique to reduce scope
+```
 
 ### 2. 层级正确性
 

@@ -98,7 +98,7 @@ project/
 ```markdown
 # <ModuleName> Intent
 
-> One-line positioning
+> Anchor: One sentence declaring why this module exists    ← REQUIRED
 
 ## Responsibilities
 
@@ -183,6 +183,52 @@ Input → Output
 grep -r "join.*appsDir" src/platforms/
 \```
 ```
+
+---
+
+## Anchor
+
+Every INTENT.md **must** have an anchor statement — a single sentence immediately after the title, in blockquote format:
+
+```markdown
+# Session Protocol Intent
+
+> Anchor: Enable type-safe binary communication between AFS nodes.
+```
+
+**Rules:**
+- One sentence only, no paragraphs
+- Declares the module's reason to exist
+- Every section in the file must trace back to this anchor
+- If a section cannot justify its relevance to the anchor, it should be removed
+
+---
+
+## Size Budget
+
+Intent files have hard line limits to prevent scope creep:
+
+| Level | Max Lines | When Exceeded |
+|-------|-----------|---------------|
+| Module-level | 150 | Scope has drifted — run `/intent-critique` to reduce |
+| Project-level | 300 | Split into module-level intents |
+
+**Counting rules:**
+- Count all lines including blank lines and code fences
+- Frontmatter (if any) is excluded from the count
+
+When a file exceeds its budget, it is a signal that scope has expanded beyond the original anchor. The remedy is critique and split, not a bigger budget.
+
+---
+
+## Anti-Accretion Rules
+
+Intent files tend to grow over time. These rules prevent unbounded accretion:
+
+1. **Anchor guard** — Every section must serve the anchor statement. Content that drifts from the anchor belongs in a different Intent or nowhere.
+2. **Size budget** — Module ≤ 150 lines, project ≤ 300 lines. Exceeding = scope creep.
+3. **Interview only asks** — `/intent-interview` outputs decisions, not new sections. The Intent file is composed separately under budget constraints.
+4. **Critique must net-reduce** — After `/intent-critique`, total line count must be ≤ before. Only delete, merge, or simplify — never add new concepts.
 
 ---
 

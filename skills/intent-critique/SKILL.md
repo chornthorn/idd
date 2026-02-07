@@ -11,6 +11,28 @@ description: Critical review of Intent design quality. Checks for over-engineeri
 
 每次 critique 回答一个问题：**这个设计能更简单吗？**
 
+## Anti-Accretion Rule: 净减
+
+**Critique 后总行数必须 ≤ 之前。** 这是硬约束，不是建议。
+
+Critique 只允许 3 种操作：
+
+| 操作 | 说明 | 示例 |
+|------|------|------|
+| **删除** | 移除 section 或内容 | 删除未使用的插件系统设计 |
+| **合并** | 多个 section 合为一个 | 将 Error Handling 合入 API Constraints |
+| **简化** | 用更少的行表达相同约束 | 5 行描述压缩为 2 行 |
+
+**禁止：**
+- ❌ 引入新概念或新 section
+- ❌ 添加新分析框架
+- ❌ 扩展现有 section 的范围
+
+如果确实需要加新内容，必须：
+1. 先删等量或更多旧内容
+2. 用户明确同意
+3. 最终行数仍然 ≤ 初始行数
+
 ## 检查维度
 
 | 维度 | 信号 | 问题 |
@@ -66,6 +88,17 @@ description: Critical review of Intent design quality. Checks for over-engineeri
 ```
 
 ## 执行步骤
+
+### 0. 记录初始行数
+
+**第一步必须是计数。** 在任何分析之前：
+
+```bash
+wc -l INTENT.md
+# 记录为 before_lines
+```
+
+将 `before_lines` 记录下来，critique 结束时用于验证净减。
 
 ### 1. 读取并理解 Intent
 
@@ -194,6 +227,34 @@ AskUserQuestion:
 - 删除被简化掉的 sections
 - 添加简化说明到变更记录
 - 将受影响的 sections 标记回 `draft`
+
+### 7. 验证净减（必须）
+
+更新 Intent 后，立即验证：
+
+```bash
+wc -l INTENT.md
+# 记录为 after_lines
+```
+
+**判定规则：**
+
+```
+if after_lines > before_lines:
+    ❌ 拒绝保存。回滚更改。
+    报告：
+      before: {before_lines} lines
+      after:  {after_lines} lines
+      delta:  +{after_lines - before_lines} lines
+      "Critique must net-reduce. Review changes and remove additions."
+
+if after_lines <= before_lines:
+    ✅ 保存成功。
+    报告：
+      before: {before_lines} lines
+      after:  {after_lines} lines
+      reduced: {before_lines - after_lines} lines ({percentage}%)
+```
 
 ## 讨论技巧
 
