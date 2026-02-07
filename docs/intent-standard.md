@@ -249,6 +249,7 @@ Every INTENT.md **must** have an anchor statement — one or two sentences immed
 
 > Anchor: Enable type-safe binary communication between AFS nodes.
 > Assumes: kernel/proc, kernel/afs-scoping
+> References: planning/v2-protocol-research.md
 ```
 
 **Rules:**
@@ -270,6 +271,69 @@ The `Assumes:` line is **optional** — only add it when the intent depends on o
 - Only declare direct dependencies, not transitive ones
 - Used by `intent-audit` to build the dependency graph and detect orphans/stale refs
 - See [intent-data-format.md](intent-data-format.md) for the generated graph schema
+
+### References Tag
+
+The `References:` line is **optional** — links to planning docs, external resources, or other non-intent materials that informed this intent.
+
+```markdown
+> References: planning/v2-protocol-research.md, planning/user-feedback-2026-01.md
+```
+
+**Rules:**
+- Comma-separated list of relative file paths or URLs
+- Informational only — does not create dependency edges in the graph
+- Helps trace why an intent exists and what research informed it
+
+---
+
+## Planning
+
+The `planning/` directory is a **top-level** directory for pre-intent exploration — ideas, research, user feedback, and AI analysis. It sits alongside `intent/`, not inside it.
+
+```
+project/
+├── planning/                    # Divergent: exploration, research, ideas
+│   ├── v2-roadmap.md
+│   ├── legacy-code-analysis.md
+│   ├── user-feedback-2026-01.md
+│   └── competitor-research.md
+├── intent/                      # Convergent: specs, constraints, testable
+│   └── ...
+└── src/
+```
+
+**Planning vs Intent vs Records:**
+
+| | Planning | Intent | Records |
+|---|---------|--------|---------|
+| Nature | Divergent | Convergent | Raw input |
+| Scope | Project-level | Per-module | Per-intent |
+| Budget | None | Size-limited | None |
+| Feeds | One or many intents | Implementation | One intent |
+
+**Frontmatter:**
+
+Planning files **may** have minimal frontmatter:
+
+```yaml
+---
+type: research
+---
+```
+
+| Field | Values | Description |
+|-------|--------|-------------|
+| `type` | `idea`, `research`, `feedback`, `analysis` | Content classification |
+
+- `idea` — new feature/product concept
+- `research` — competitive analysis, technology research, reference studies
+- `feedback` — user feedback, usage data, support tickets
+- `analysis` — AI analysis of existing code, architecture review, improvement proposals
+
+**Naming:** Free-form, but descriptive. Examples: `v2-roadmap.md`, `legacy-auth-analysis.md`, `user-feedback-2026-Q1.md`.
+
+**Connection to Intent:** Use the `References:` tag in the intent anchor block to link back to planning docs that informed the intent.
 
 ---
 
@@ -512,5 +576,5 @@ run_count: 0                 # total executions
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.1 | 2026-02-06 | Add `Assumes:` tag, TASK.yaml type extension, frontmatter, lifecycle & archive |
+| 1.1 | 2026-02-06 | Add `Assumes:` / `References:` tags, planning convention, frontmatter, lifecycle & archive, TASK.yaml type extension |
 | 1.0 | 2026-01-19 | Initial version |
