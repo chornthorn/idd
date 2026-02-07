@@ -228,8 +228,8 @@ type: research
     ↓
 TeamSwarm pickup        # 自动调度 needs 中的后续 skill
     ↓
-/intent-critique        # 处理 needs: [critique]
 /intent-interview       # 处理 needs: [anchor]
+/intent-critique        # 处理 needs: [critique]
 /intent-review          # 处理 needs: [review]
     ↓
 /intent-check           # 最终合规检查
