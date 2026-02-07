@@ -188,7 +188,7 @@ grep -r "join.*appsDir" src/platforms/
 
 ## Anchor
 
-Every INTENT.md **must** have an anchor statement — a single sentence immediately after the title, in blockquote format:
+Every INTENT.md **must** have an anchor statement — one or two sentences immediately after the title, in blockquote format:
 
 ```markdown
 # Session Protocol Intent
@@ -197,7 +197,7 @@ Every INTENT.md **must** have an anchor statement — a single sentence immediat
 ```
 
 **Rules:**
-- One sentence only, no paragraphs
+- One or two sentences max, no paragraphs
 - Declares the module's reason to exist
 - Every section in the file must trace back to this anchor
 - If a section cannot justify its relevance to the anchor, it should be removed
@@ -206,18 +206,19 @@ Every INTENT.md **must** have an anchor statement — a single sentence immediat
 
 ## Size Budget
 
-Intent files have hard line limits to prevent scope creep:
+Intent files have tiered line limits to prevent scope creep:
 
-| Level | Max Lines | When Exceeded |
-|-------|-----------|---------------|
-| Module-level | 150 | Scope has drifted — run `/intent-critique` to reduce |
-| Project-level | 300 | Split into module-level intents |
+| Lines | Status | Action |
+|-------|--------|--------|
+| ≤ 300 | Healthy | None |
+| 300–500 | Warning | Tool prompts "Intent is getting long — split or trim?" |
+| > 500 | Block | Must run `/intent-critique` before adding any new content |
 
 **Counting rules:**
 - Count all lines including blank lines and code fences
 - Frontmatter (if any) is excluded from the count
 
-When a file exceeds its budget, it is a signal that scope has expanded beyond the original anchor. The remedy is critique and split, not a bigger budget.
+**Data basis:** 19 stable intents average 190 lines. Healthy intents with implementation-driven growth stay in 300–700. Intents exceeding 500 almost always have accretion problems.
 
 ---
 
@@ -226,9 +227,10 @@ When a file exceeds its budget, it is a signal that scope has expanded beyond th
 Intent files tend to grow over time. These rules prevent unbounded accretion:
 
 1. **Anchor guard** — Every section must serve the anchor statement. Content that drifts from the anchor belongs in a different Intent or nowhere.
-2. **Size budget** — Module ≤ 150 lines, project ≤ 300 lines. Exceeding = scope creep.
+2. **Size budget** — ≤ 300 healthy, 300–500 warning, > 500 blocked. Data-driven thresholds.
 3. **Interview only asks** — `/intent-interview` outputs decisions, not new sections. The Intent file is composed separately under budget constraints.
-4. **Critique must net-reduce** — After `/intent-critique`, total line count must be ≤ before. Only delete, merge, or simplify — never add new concepts.
+4. **Critique must net-reduce** — After `/intent-critique`, total line count must be ≤ before. Only delete, merge, split, or simplify — never add new concepts.
+5. **Convergence checkpoint** — After 3+ modifications, `/intent-critique` auto-runs convergence checks: anchor trace, implementation match, constraint-vs-analysis classification, dedup with sub-intents.
 
 ---
 

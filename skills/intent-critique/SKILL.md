@@ -15,18 +15,25 @@ description: Critical review of Intent design quality. Checks for over-engineeri
 
 **Critique 后总行数必须 ≤ 之前。** 这是硬约束，不是建议。
 
-Critique 只允许 3 种操作：
+Critique 只允许 4 种操作：
 
 | 操作 | 说明 | 示例 |
 |------|------|------|
 | **删除** | 移除 section 或内容 | 删除未使用的插件系统设计 |
 | **合并** | 多个 section 合为一个 | 将 Error Handling 合入 API Constraints |
+| **拆分** | 移到独立 intent | §13-§18 从 ash 拆为 ash/agentic-patterns |
 | **简化** | 用更少的行表达相同约束 | 5 行描述压缩为 2 行 |
 
 **禁止：**
 - ❌ 引入新概念或新 section
 - ❌ 添加新分析框架
 - ❌ 扩展现有 section 的范围
+
+如果发现缺了什么，输出 gap flag，不直接填充：
+
+```
+Gap: intent 没有说明 failure handling。建议在下一轮 interview 中讨论。
+```
 
 如果确实需要加新内容，必须：
 1. 先删等量或更多旧内容
@@ -99,6 +106,49 @@ wc -l INTENT.md
 ```
 
 将 `before_lines` 记录下来，critique 结束时用于验证净减。
+
+### 0.5 Convergence Check（修改 ≥ 3 次时自动触发）
+
+检查 git log 中 INTENT.md 的提交次数。如果 ≥ 3 次，在正常 critique 之前先跑 convergence：
+
+**4 步 convergence 检查：**
+
+1. **Anchor trace** — 对每个 section 问：能追溯到 anchor 吗？
+   - 不能 → 标记为候选删除
+
+2. **Implementation match** — 对每个 section 问：有对应的实现吗？
+   - 有实现 → 保留
+   - 没实现且不在 plan 里 → 标记为候选删除
+
+3. **Constraint vs Analysis** — 对每个 section 问：这是约束还是分析？
+   - "Three Dimensions of Chat Experience" = 分析 → 精简或移到 appendix
+   - "INV-1: LLM is a Pure Function" = 约束 → 保留
+
+4. **Dedup with sub-intents** — 有 section 跟子 intent 重复吗？
+   - 有 → 删掉，留一个链接
+
+**Convergence 输出格式：**
+
+```markdown
+## Convergence Check (triggered: 5 commits since last convergence)
+
+### Anchor trace failures
+- § Agentic Pattern Zones — cannot trace to "ASH 是 shell 语言"
+- § Echo Deprecation — migration plan, not core spec
+
+### Unimplemented sections
+- § Template Registry — no code, not in plan
+
+### Analysis (not constraint)
+- § AI Agent 适配性分析 — 40 lines of analysis, 0 constraints
+
+### Duplicated in sub-intents
+- § Boot Sequence — duplicates kernel/bootloader INTENT.md §2
+
+→ Candidates for removal: 4 sections, ~280 lines
+```
+
+跑完 convergence 后，进入正常 critique 流程。
 
 ### 1. 读取并理解 Intent
 

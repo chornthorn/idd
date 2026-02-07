@@ -185,15 +185,18 @@ Options:
 
 #### Step 4: Budget Check
 
-Count the lines of the draft:
+Count the lines of the draft and check against tiered budget:
 
-- Module-level: must be ≤ 150 lines
-- Project-level: must be ≤ 300 lines
+| Lines | Status | Action |
+|-------|--------|--------|
+| ≤ 300 | Healthy | Save |
+| 300–500 | Warning | Prompt user to trim before saving |
+| > 500 | Blocked | Must trim before saving |
 
 If over budget:
 
 ```
-⚠️ Budget exceeded: 187/150 lines (+37)
+⚠️ Budget warning: 437/300 lines (+137)
 
 Sections by size:
 1. ## API — 45 lines

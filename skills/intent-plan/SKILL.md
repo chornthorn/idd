@@ -148,7 +148,7 @@ Verify the Intent has been properly interviewed:
 |-------|---------------|-----------|
 | INTENT.md exists | File exists in intent directory | Run `/intent-interview` |
 | Anchor exists | First blockquote after title starts with `>` | Add anchor statement |
-| Within budget | `wc -l INTENT.md` ≤ 150 (module) or ≤ 300 (project) | Run `/intent-critique` to reduce |
+| Within budget | `wc -l INTENT.md` ≤ 500 (warning at 300) | Run `/intent-critique` to reduce if > 500 |
 | Structure complete | Has Responsibilities, Structure, API sections | Run `/intent-interview` |
 | Not a stub | Content is substantial, not placeholder text | Run `/intent-interview` |
 

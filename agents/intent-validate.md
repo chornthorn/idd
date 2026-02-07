@@ -40,21 +40,30 @@ model: inherit
 
 ### 1.5 Size Budget
 
-| 检查项 | 必须 | 说明 |
-|--------|------|------|
-| 模块级行数 | ✓ | ≤ 150 行（排除 frontmatter） |
-| 项目级行数 | ✓ | ≤ 300 行（排除 frontmatter） |
+| 行数 | 状态 | 说明 |
+|------|------|------|
+| ≤ 300 | ✅ 健康 | 无需操作 |
+| 300–500 | ⚠️ 警告 | 提示拆分或精简 |
+| > 500 | ❌ 阻断 | 必须先跑 `/intent-critique` 才能继续加内容 |
 
 超出 budget 时输出 warning：
 
 ```
-⚠️ Size Budget Exceeded
+⚠️ Size Budget Warning (or ❌ Size Budget Exceeded)
 - File: src/core/intent/INTENT.md
-- Level: module
-- Current: 187 lines
-- Budget: 150 lines
-- Over by: 37 lines (25%)
-- Action: Run /intent-critique to reduce scope
+- Current: 437 lines
+- Status: WARNING (300-500)
+- Action: Consider running /intent-critique to split or trim
+```
+
+> 500 行时输出 error：
+
+```
+❌ Size Budget Exceeded
+- File: src/core/intent/INTENT.md
+- Current: 612 lines
+- Status: BLOCKED (>500)
+- Action: Run /intent-critique before adding any new content
 ```
 
 ### 2. 层级正确性
