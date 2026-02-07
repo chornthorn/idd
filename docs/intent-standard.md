@@ -125,8 +125,29 @@ status: active
 | Field | Values | Description |
 |-------|--------|-------------|
 | `status` | `active`, `implemented`, `shelved`, `abandoned`, `superseded` | Intent lifecycle state |
+| `needs` | string list | Pickup signals for pending actions (see below) |
 | `superseded_by` | intent ID | Only when `status: superseded` |
 | `split_into` | intent ID list | Only when archived after split |
+
+### `needs` — Pickup Signals
+
+The `needs` field flags what processing a file still requires. TeamSwarm scans this to auto-dispatch follow-up skills.
+
+```yaml
+---
+status: active
+needs: [anchor, critique]
+---
+```
+
+| Value | Meaning | Dispatches |
+|-------|---------|------------|
+| `anchor` | Missing or malformed anchor statement | `/intent-interview` |
+| `critique` | Over budget (>500 lines), needs convergence | `/intent-critique` |
+| `review` | Warning budget (300–500 lines) or unreviewed | `/intent-review` |
+| `assumes` | References other intents but no `Assumes:` tag | Manual |
+
+Once addressed, the corresponding value is removed. When `needs` is empty, delete the field.
 
 **Examples:**
 
@@ -140,6 +161,13 @@ status: implemented
 ---
 status: superseded
 superseded_by: auth/v2
+---
+```
+
+```yaml
+---
+status: active
+needs: [anchor]
 ---
 ```
 

@@ -29,6 +29,7 @@ IDD:   Intent → Test → Code → Sync
 | `/intent-build-now` | `skills/intent-build-now/` | 验证 Intent 完整性并启动构建 |
 | `/intent-plan` | `skills/intent-plan/` | 生成严格 TDD 的阶段性执行计划 |
 | `/intent-sync` | `skills/intent-sync/` | 实现完成后同步细节回 Intent |
+| `/intent-normalize` | `skills/intent-normalize/` | 扫描规范化现有 intent/planning 文件 |
 | `/intent-check` | `skills/intent-check/` | 运行格式验证和同步检查 |
 | `/intent-report` | `skills/intent-report/` | 从 Intent 生成人类可读报告 |
 | `/intent-story` | `skills/intent-story/` | 分享 IDD 使用经验，生成博客 |
@@ -85,6 +86,7 @@ idd/
 │   ├── intent-changes/     # 变更提案 Review
 │   ├── intent-review/      # Section 审批
 │   ├── intent-build-now/   # 验证并启动构建
+│   ├── intent-normalize/   # 扫描规范化现有文件
 │   ├── intent-plan/        # TDD 执行计划
 │   ├── intent-sync/        # 同步实现细节
 │   ├── intent-check/       # 运行检查
