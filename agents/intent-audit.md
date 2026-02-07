@@ -118,6 +118,91 @@ Section 审批统计：
 违规总计: 2 处
 ```
 
+### 6. Size Budget
+
+Per-intent line count vs tiered thresholds (from `intent-standard.md` Anti-Accretion Rules):
+
+```
+Size Budget 检查：
+
+| Intent | Lines | Status |
+|--------|-------|--------|
+| kernel/proc | 413 | ⚠️ Warning (300–500) |
+| kernel/afs-scoping | 187 | ✅ Healthy (≤300) |
+| ash | 612 | ❌ Blocked (>500) — must run /intent-critique |
+
+Budget Summary: 30 healthy, 8 warning, 4 blocked
+```
+
+**Thresholds:** ≤ 300 healthy, 300–500 warning, > 500 blocked.
+
+### 7. Convergence Overdue
+
+Detects intents with ≥ 3 commits since last convergence check (critique/sync):
+
+```
+Convergence 检查：
+
+| Intent | Commits Since | Last Convergence | Status |
+|--------|---------------|------------------|--------|
+| kernel/proc | 5 | 2026-02-03 | ❌ Overdue (≥3) |
+| ash | 1 | 2026-02-05 | ✅ OK |
+| surfaces | 4 | null | ❌ Never converged |
+
+Convergence Overdue: 6 intents
+```
+
+**Detection method:** Count git commits touching `INTENT.md` since the most recent `records/critique-*.md` or `records/sync-*.md` entry in `records/INDEX.md`.
+
+### 8. Analysis Ratio
+
+Classifies sections as constraint (testable rule) vs analysis (background/exploration). High analysis ratio suggests the intent needs convergence:
+
+```
+Analysis Ratio 检查：
+
+| Intent | Total Sections | Analysis | Ratio | Status |
+|--------|---------------|----------|-------|--------|
+| kernel/proc | 12 | 2 | 17% | ✅ OK |
+| ash | 15 | 8 | 53% | ⚠️ High analysis content |
+```
+
+**Heuristic:** Sections with words like "Background", "Context", "Exploration", "Notes", "Discussion", "Options", "Alternatives" are classified as analysis. Sections with "API", "Constraints", "Rules", "Structure", "Invariants", "Parameters" are classified as constraint.
+
+### 9. Orphan Detection
+
+Intents with no `Assumes:` edges in or out — not depended on and not depending on anything:
+
+```
+Orphan 检查：
+
+Orphan intents (no dependency edges):
+- surfaces
+- legacy/migration
+- experimental/playground
+
+Orphans: 3 intents (of 42 total)
+```
+
+**Note:** Root-level project intent and leaf intents may legitimately have no edges. Flag for review, not necessarily an error.
+
+### 10. Stale References
+
+`Assumes:` tags pointing to deleted or moved intents:
+
+```
+Stale Reference 检查：
+
+| From | References | Status |
+|------|-----------|--------|
+| ash | kernel/echo | ❌ Target deleted |
+| api/gateway | auth/legacy | ❌ Target moved to auth/v2 |
+
+Stale References: 2
+```
+
+**Detection:** For each `Assumes:` target, verify the corresponding `intent/<id>/INTENT.md` exists.
+
 ## 输出
 
 ### Markdown 报告
@@ -137,6 +222,10 @@ Section 审批统计：
 | 审批率 | 47% | ⚠️ |
 | 依赖一致性 | 92% | ✅ |
 | 边界合规 | 85% | ⚠️ |
+| Size Budget | 30/42 healthy | ⚠️ |
+| Convergence | 6 overdue | ❌ |
+| Orphans | 15 intents | ⚠️ |
+| Stale Refs | 4 broken | ❌ |
 
 ## 健康分数: 72/100
 
@@ -159,7 +248,68 @@ Section 审批统计：
 [展开各维度详情...]
 ```
 
-### JSON 报告
+### JSON 报告 (Structured Output)
+
+When `outputFormat: "json"`, generate `intent/_data/intent-health.json` and `intent/_data/intent-graph.json` following the schemas defined in [intent-data-format.md](../docs/intent-data-format.md).
+
+**`intent-health.json`** — per-intent metrics including anti-accretion checks:
+
+```json
+{
+  "generated": "2026-02-06T10:00:00Z",
+  "version": "1.0",
+  "intents": {
+    "kernel/proc": {
+      "path": "intent/kernel/proc/INTENT.md",
+      "lines": 413,
+      "budget_status": "warning",
+      "anchor": "Process lifecycle management for AOS kernel",
+      "assumes": ["kernel/afs-scoping"],
+      "commits_since_convergence": 5,
+      "last_modified": "2026-02-05",
+      "last_convergence": "2026-02-03",
+      "convergence_due": true,
+      "sections": 12,
+      "analysis_sections": 2,
+      "approval": { "locked": 3, "reviewed": 5, "draft": 4 }
+    }
+  },
+  "summary": {
+    "total": 42,
+    "healthy": 30,
+    "warning": 8,
+    "blocked": 4,
+    "orphans": 15,
+    "stale_refs": 4,
+    "convergence_overdue": 6
+  }
+}
+```
+
+**`intent-graph.json`** — dependency graph:
+
+```json
+{
+  "generated": "2026-02-06T10:00:00Z",
+  "version": "1.0",
+  "nodes": [
+    { "id": "kernel/proc", "anchor": "...", "lines": 413, "status": "warning" }
+  ],
+  "edges": [
+    { "from": "kernel/proc", "to": "kernel/afs-scoping", "type": "assumes" }
+  ],
+  "orphans": ["surfaces"],
+  "stale_refs": [
+    { "from": "ash", "to": "kernel/echo", "reason": "target deleted" }
+  ]
+}
+```
+
+**Output location:** `intent/_data/` directory (created if not exists).
+
+### Legacy JSON 报告
+
+For backward compatibility, the inline JSON report is still supported:
 
 ```json
 {
