@@ -24,6 +24,13 @@ model: inherit
 }
 ```
 
+## 范围
+
+- Scan all `INTENT.md` files under `intent/` and module-level `intent/` directories
+- **Skip `intent/_archive/`** — archived intents are excluded from all checks
+- **Skip `intent/_data/`** — generated data files, not intents
+- Read frontmatter `status` field when present; default to `active` if omitted
+
 ## 检查维度
 
 ### 1. 覆盖率

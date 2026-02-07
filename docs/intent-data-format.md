@@ -102,6 +102,8 @@ Reports the health status of every intent in the project, including anti-accreti
 
 **Intent ID:** Relative path from `intent/` to the directory containing `INTENT.md`, using `/` as separator. Example: `kernel/proc` for `intent/kernel/proc/INTENT.md`.
 
+**Scope:** Only active intents are included. Intents in `intent/_archive/` are excluded from health and graph data.
+
 ---
 
 ### `intent-graph.json` — Dependency Graph
