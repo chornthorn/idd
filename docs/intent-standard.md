@@ -22,6 +22,12 @@
 project/
 ├── intent/                      # Project-level intent
 │   ├── INTENT.md                # Entry: vision + index
+│   ├── decisions.md             # Interview decisions (Phase A output)
+│   ├── records/                 # Raw input archive (append-only)
+│   │   ├── INDEX.md             # Summary index of all records
+│   │   ├── interview-2026-02-01.md
+│   │   ├── review-chatgpt-2026-02-03.md
+│   │   └── critique-2026-02-05.md
 │   ├── architecture/            # Architecture constraints
 │   │   ├── DEPENDENCIES.md      # Module dependency graph
 │   │   └── BOUNDARIES.md        # Boundary rules
@@ -31,7 +37,10 @@ project/
 ├── src/
 │   ├── core/                    # Core module
 │   │   └── intent/
-│   │       └── INTENT.md        # Core module intent
+│   │       ├── INTENT.md        # Core module intent
+│   │       ├── decisions.md     # Interview decisions
+│   │       └── records/         # Raw input archive
+│   │           └── INDEX.md
 │   │
 │   ├── platforms/               # Multi-platform
 │   │   ├── web/
@@ -201,6 +210,49 @@ Every INTENT.md **must** have an anchor statement — one or two sentences immed
 - Declares the module's reason to exist
 - Every section in the file must trace back to this anchor
 - If a section cannot justify its relevance to the anchor, it should be removed
+
+---
+
+## Records
+
+Every intent directory **should** have a `records/` subdirectory for raw input archiving:
+
+```
+intent/module-name/
+├── INTENT.md              # Distilled spec (budget-controlled)
+├── decisions.md           # Interview Phase A output
+└── records/               # All raw inputs, append-only
+    ├── INDEX.md            # Summary index
+    ├── interview-2026-02-01.md
+    ├── review-chatgpt-2026-02-03.md
+    ├── review-gemini-2026-02-04.md
+    ├── critique-2026-02-05.md
+    └── import-2026-02-06.md
+```
+
+**Principles:**
+- `records/` is append-only — never delete, never edit existing records
+- No budget constraint on records — raw materials can be any length
+- File naming: `{type}-{source?}-{YYYY-MM-DD}.md` (source optional for internal ops)
+- `INDEX.md` maintains a one-line summary per record for quick scanning
+
+**INDEX.md format:**
+
+```markdown
+# Records Index
+
+| Date | Type | Source | Summary |
+|------|------|--------|---------|
+| 2026-02-01 | interview | — | Initial interview, 12 decisions on data model and API |
+| 2026-02-03 | review | chatgpt | Architecture review, recommended splitting storage layer |
+| 2026-02-05 | critique | — | Convergence check, removed 3 sections (-120 lines) |
+```
+
+**Usage:**
+- `/intent-interview` saves raw transcript to `records/interview-{date}.md`
+- `/intent-critique` saves critique record to `records/critique-{date}.md`
+- External AI reviews: user imports to `records/review-{source}-{date}.md`
+- Critique reads `records/INDEX.md` first, drills into specific records as needed
 
 ---
 

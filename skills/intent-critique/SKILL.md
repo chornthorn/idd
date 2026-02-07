@@ -150,6 +150,29 @@ wc -l INTENT.md
 
 跑完 convergence 后，进入正常 critique 流程。
 
+### 0.7 读取 Records 索引
+
+如果 `records/INDEX.md` 存在，先读取索引了解完整决策上下文：
+
+- 哪些 interview 做过哪些决策
+- 其他 AI（ChatGPT、Gemini 等）给过什么 review 意见
+- 之前的 critique 记录
+
+按需深入读取相关 record 文件。这解决了 context asymmetry —— 即使原始讨论发生在其他 AI 上，这里也有完整记录。
+
+### 0.8 Devil's Advocate（独立评估）
+
+起一个**不带当前讨论 context 的 subagent**，只给它：
+- INTENT.md 全文
+- Anchor 声明
+
+让它独立回答 3 个问题：
+1. 这个 intent 最大的设计风险是什么？
+2. 哪些 section 看起来像分析而非约束？
+3. 如果只能保留 3 个 section，你保留哪些？
+
+将 devil's advocate 的输出作为 critique 的额外输入，不直接采纳但用于交叉验证自己的判断。
+
 ### 1. 读取并理解 Intent
 
 先完整阅读 Intent，理解：
@@ -305,6 +328,16 @@ if after_lines <= before_lines:
       after:  {after_lines} lines
       reduced: {before_lines - after_lines} lines ({percentage}%)
 ```
+
+### 8. 保存 Critique 记录
+
+将完整 critique 报告保存到 `records/critique-{date}.md`，更新 `records/INDEX.md`：
+
+```markdown
+| 2026-02-06 | critique | — | Convergence + critique, removed §13-§15 (-180 lines), kept §2 |
+```
+
+记录包含：convergence 结果、devil's advocate 输出、每个发现的决策、净行数变化。
 
 ## 讨论技巧
 

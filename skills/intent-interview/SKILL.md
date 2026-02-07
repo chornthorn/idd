@@ -221,6 +221,9 @@ Write the budget-compliant INTENT.md. Optionally generate overview.md if user re
 ### decisions.md (Phase A output)
 Interview record with all questions, decisions, rationale, and scope boundaries.
 
+### records/interview-{date}.md (Phase A side-effect)
+Raw interview transcript saved to `records/` for full traceability. Updates `records/INDEX.md`.
+
 ### intent.md (Phase B output)
 Technical specification under budget constraints, with anchor-verified sections.
 
