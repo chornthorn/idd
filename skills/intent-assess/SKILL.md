@@ -5,69 +5,69 @@ description: Assess if IDD fits your project and learn about Intent-Driven Devel
 
 # Intent Assess
 
-评估项目是否适合 IDD，并教育 IDD 方法论。
+Assess whether a project is suitable for IDD and educate on the IDD methodology.
 
-## 两个模式
+## Two Modes
 
-### 1. 评估模式 (Assessment)
+### 1. Assessment Mode
 
 ```
 /intent-assess
 ```
 
-分析当前项目，评估是否适合采用 IDD。
+Analyze the current project and assess whether IDD adoption is appropriate.
 
-### 2. 学习模式 (Learning)
+### 2. Learning Mode
 
 ```
 /intent-assess --learn
 ```
 
-教育 IDD 方法论，解释核心概念。
+Educate on the IDD methodology, explain core concepts.
 
 ---
 
-## 评估模式
+## Assessment Mode
 
-### 工作流程
+### Workflow
 
 ```
 /intent-assess
         ↓
 ┌───────────────────────────────────┐
-│  Phase 1: 项目分析                │
-│  - 项目类型识别                   │
-│  - 代码库规模                     │
-│  - 现有文档情况                   │
-│  - 团队协作模式                   │
+│  Phase 1: Project Analysis        │
+│  - Project type identification    │
+│  - Codebase size                  │
+│  - Existing documentation status  │
+│  - Team collaboration model       │
 └─────────────┬─────────────────────┘
               ↓
 ┌───────────────────────────────────┐
-│  Phase 2: 适配度评估              │
-│  - 计算匹配分数                   │
-│  - 识别优势和挑战                 │
+│  Phase 2: Fit Assessment          │
+│  - Calculate match score          │
+│  - Identify strengths & challenges│
 └─────────────┬─────────────────────┘
               ↓
 ┌───────────────────────────────────┐
-│  Phase 3: 建议                    │
-│  - 是否推荐 IDD                   │
-│  - 如何开始                       │
-│  - 替代方案（如不适合）           │
+│  Phase 3: Recommendations         │
+│  - Whether to recommend IDD       │
+│  - How to get started             │
+│  - Alternatives (if not suitable) │
 └───────────────────────────────────┘
 ```
 
-### 评估维度
+### Assessment Dimensions
 
-| 维度 | 有利于 IDD | 不利于 IDD |
-|------|-----------|-----------|
-| **项目类型** | 系统软件、框架、库 | 简单脚本、一次性项目 |
-| **代码规模** | 中大型 (>5k LOC) | 小型 (<1k LOC) |
-| **团队协作** | 多人协作、AI 辅助 | 单人独立开发 |
-| **架构复杂度** | 多模块、需要边界 | 单模块、简单结构 |
-| **迭代方式** | 持续迭代、长期维护 | 一次性交付 |
-| **AI 工具使用** | 使用 Claude/Copilot | 纯人工开发 |
+| Dimension | Favorable for IDD | Unfavorable for IDD |
+|-----------|-------------------|---------------------|
+| **Project Type** | System software, frameworks, libraries | Simple scripts, one-off projects |
+| **Code Size** | Medium-large (>5k LOC) | Small (<1k LOC) |
+| **Team Collaboration** | Multi-person, AI-assisted | Solo development |
+| **Architecture Complexity** | Multi-module, needs boundaries | Single module, simple structure |
+| **Iteration Style** | Continuous iteration, long-term maintenance | One-time delivery |
+| **AI Tool Usage** | Using Claude/Copilot | Purely manual development |
 
-### 评估报告示例
+### Assessment Report Example
 
 ```markdown
 # IDD Assessment Report
@@ -75,167 +75,171 @@ description: Assess if IDD fits your project and learn about Intent-Driven Devel
 > Project: ainecore
 > Date: 2026-01-19
 
-## 适配度评分: 85/100 ⭐⭐⭐⭐
+## Fit Score: 85/100 ⭐⭐⭐⭐
 
-## 项目特征
+## Project Characteristics
 
-| 特征 | 当前状态 | IDD 契合度 |
-|------|---------|-----------|
-| 项目类型 | 框架/平台 | ✅ 高 |
-| 代码规模 | ~15k LOC | ✅ 高 |
-| 模块数量 | 12 个 | ✅ 高 |
-| 团队规模 | 3 人 + AI | ✅ 高 |
-| 现有文档 | 部分 | 🟡 中 |
+| Characteristic | Current Status | IDD Fit |
+|----------------|---------------|---------|
+| Project Type | Framework/Platform | ✅ High |
+| Code Size | ~15k LOC | ✅ High |
+| Module Count | 12 modules | ✅ High |
+| Team Size | 3 people + AI | ✅ High |
+| Existing Docs | Partial | 🟡 Medium |
 
-## 优势
+## Strengths
 
-- ✅ 多模块架构，需要清晰边界定义
-- ✅ 使用 AI 辅助开发，Intent 可指导 AI
-- ✅ 长期维护项目，文档价值高
-- ✅ 已有部分设计文档，可迁移
+- ✅ Multi-module architecture needs clear boundary definitions
+- ✅ AI-assisted development, Intent can guide AI
+- ✅ Long-term maintenance project, high documentation value
+- ✅ Has some existing design docs, can be migrated
 
-## 挑战
+## Challenges
 
-- ⚠️ 需要建立 Intent 编写习惯
-- ⚠️ 现有代码需要补充 Intent
-- ⚠️ 团队需要学习 IDD 方法
+- ⚠️ Need to establish Intent writing habits
+- ⚠️ Existing code needs Intent supplements
+- ⚠️ Team needs to learn IDD methodology
 
-## 建议
+## Recommendations
 
-### 推荐: 采用 IDD ✅
+### Recommended: Adopt IDD ✅
 
-该项目非常适合 IDD：
-1. 多模块架构需要清晰的边界和契约
-2. AI 辅助开发可以直接使用 Intent 作为上下文
-3. 长期维护价值高
+This project is well-suited for IDD:
+1. Multi-module architecture needs clear boundaries and contracts
+2. AI-assisted development can directly use Intent as context
+3. High long-term maintenance value
 
-### 启动建议
+### Getting Started Suggestions
 
-1. **从核心模块开始**
-   - 先为 `src/core/` 编写 Intent
-   - 建立 Intent 模板和规范
+1. **Start with core modules**
+   - Write Intent for `src/core/` first
+   - Establish Intent templates and standards
 
-2. **渐进式推广**
-   - 新功能必须先写 Intent
-   - 老代码逐步补充
+2. **Gradual rollout**
+   - New features must have Intent first
+   - Existing code gets Intent gradually
 
-3. **工具配套**
-   - 安装 IDD plugin
-   - 配置 CI/CD 集成
+3. **Tool integration**
+   - Install IDD plugin
+   - Configure CI/CD integration
 
-### 预期收益
+### Expected Benefits
 
-- 🎯 AI 编码效率提升 ~30%
-- 🎯 架构边界更清晰
-- 🎯 新成员 onboard 更快
-- 🎯 减少 "文档过时" 问题
+- 🎯 AI coding efficiency improvement ~30%
+- 🎯 Clearer architecture boundaries
+- 🎯 Faster new member onboarding
+- 🎯 Reduced "outdated documentation" issues
 ```
 
 ---
 
-## 学习模式
+## Learning Mode
 
-### 交互式教学
+### Interactive Teaching
 
 ```
 /intent-assess --learn
 ```
 
-通过问答方式教授 IDD：
+Teach IDD through Q&A:
 
 ```
 ┌───────────────────────────────────┐
-│  欢迎学习 IDD！                   │
+│  Welcome to IDD!                  │
 │                                   │
-│  我将介绍：                        │
-│  1. 什么是 IDD                    │
-│  2. IDD vs TDD vs SDD             │
-│  3. Intent 文件结构               │
-│  4. 实际案例                       │
+│  I will introduce:                │
+│  1. What is IDD                   │
+│  2. IDD vs TDD vs SDD            │
+│  3. Intent file structure         │
+│  4. Real examples                 │
 │                                   │
-│  你想从哪个话题开始？              │
+│  Which topic would you like to    │
+│  start with?                      │
 └───────────────────────────────────┘
 ```
 
-### 核心概念讲解
+### Core Concept Explanations
 
-#### 1. 什么是 IDD
+#### 1. What is IDD
 
 ```
-开发方法论演进：
+Development methodology evolution:
 
 Traditional:  Code → Test → Docs
-              (文档经常过时)
+              (Documentation often gets outdated)
 
 SDD:          Spec → Code → Test
-              (Spec 分散，难以维护)
+              (Specs scattered, hard to maintain)
 
 TDD:          Test → Code → Docs
-              (测试不能捕捉设计理由)
+              (Tests can't capture design rationale)
 
 IDD:          Intent → Test → Code → Sync
-              (Intent 作为唯一真相来源)
+              (Intent as the single source of truth)
 ```
 
-#### 2. Intent 三层结构
+#### 2. Intent Three-Layer Structure
 
 ```
 ┌─────────────────────────────────────┐
-│  Layer 1: 结构图 (Structure)        │
-│  - 目录结构、数据结构、模块关系      │
-│  - ASCII 图优先                     │
+│  Layer 1: Structure                 │
+│  - Directory structure, data        │
+│    structures, module relationships │
+│  - ASCII diagrams preferred         │
 ├─────────────────────────────────────┤
-│  Layer 2: 约束规则 (Constraints)    │
-│  - 依赖方向、边界规则、不变式        │
-│  - 可转化为测试断言                  │
+│  Layer 2: Constraints               │
+│  - Dependency directions, boundary  │
+│    rules, invariants                │
+│  - Can be converted to test         │
+│    assertions                       │
 ├─────────────────────────────────────┤
-│  Layer 3: 行为示例 (Examples)       │
-│  - 输入 → 输出 示例                 │
-│  - 边界情况                         │
+│  Layer 3: Examples                  │
+│  - Input → Output examples         │
+│  - Edge cases                       │
 └─────────────────────────────────────┘
 ```
 
-#### 3. IDD vs SDD 对比
+#### 3. IDD vs SDD Comparison
 
 ```markdown
-| 维度 | SDD | IDD |
-|------|-----|-----|
-| 组织方式 | 按类型 (功能/UX/技术) | 按模块 |
-| 核心载体 | 文字描述 | 结构图 |
-| 粒度 | 细分 User Story | 完整 Pattern |
-| Task 管理 | 独立 Task 文件 | AI 自主分解 |
-| LLM 友好度 | 需要拼装上下文 | 一次理解完整 |
+| Dimension | SDD | IDD |
+|-----------|-----|-----|
+| Organization | By type (feature/UX/tech) | By module |
+| Core Medium | Text descriptions | Structure diagrams |
+| Granularity | Granular User Stories | Complete Patterns |
+| Task Management | Separate Task files | AI autonomously decomposes |
+| LLM Friendliness | Requires context assembly | Understands completely at once |
 ```
 
-#### 4. 实际案例
+#### 4. Real Examples
 
-展示一个真实的 Intent 文件，解释各部分作用。
+Show a real Intent file and explain each part's role.
 
-### 快速参考
+### Quick Reference
 
 ```
 /intent-assess --learn --topic <topic>
 ```
 
-可选 topic：
-- `what` - 什么是 IDD
-- `vs-sdd` - IDD vs SDD 对比
-- `vs-tdd` - IDD vs TDD 对比
-- `structure` - Intent 文件结构
-- `workflow` - IDD 工作流程
-- `approval` - Section 审批机制
-- `best-practices` - 最佳实践
+Available topics:
+- `what` - What is IDD
+- `vs-sdd` - IDD vs SDD comparison
+- `vs-tdd` - IDD vs TDD comparison
+- `structure` - Intent file structure
+- `workflow` - IDD workflow
+- `approval` - Section approval mechanism
+- `best-practices` - Best practices
 
 ---
 
-## 与其他命令配合
+## Integration with Other Commands
 
 ```
-/intent-assess                # 评估项目
-    ↓ (如果适合)
-/intent-assess --learn        # 学习 IDD
+/intent-assess                # Assess project
+    ↓ (if suitable)
+/intent-assess --learn        # Learn IDD
     ↓
-/intent-init                  # 初始化 IDD
+/intent-init                  # Initialize IDD
     ↓
-/intent-interview             # 创建 Intent
+/intent-interview             # Create Intent
 ```

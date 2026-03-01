@@ -25,7 +25,7 @@ Transform an approved Intent into a structured, executable development plan with
 ├── ### Tests
 │   ├── #### Happy Path
 │   │   └── - [ ] test case 1
-│   ├── #### Bad Path (详尽列举)
+│   ├── #### Bad Path (exhaustive listing)
 │   │   └── - [ ] error case 1
 │   ├── #### Edge Cases
 │   │   └── - [ ] boundary case 1
@@ -36,7 +36,7 @@ Transform an approved Intent into a structured, executable development plan with
 │   └── #### Data Damage
 │       └── - [ ] integrity test 1
 ├── ### E2E Gate
-│   └── CLI/Script 验证命令
+│   └── CLI/Script verification command
 └── ### Acceptance Criteria
     └── - [ ] criterion 1
 
@@ -124,17 +124,18 @@ If browser/headless testing is truly necessary:
     ↓
 ┌─────────────────────────────────────┐
 │ Gate 1: Interview Check             │
-│   ✗ → "先跑 /intent-interview"       │
+│   ✗ → "Run /intent-interview first" │
 └─────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────┐
 │ Gate 2: Critique Check              │
-│   ✗ → "先跑 /intent-critique"        │
+│   ✗ → "Run /intent-critique first"  │
 └─────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────┐
 │ Gate 3: Dependency Check            │
-│   ✗ → "前置任务未完成，无法 plan"    │
+│   ✗ → "Prerequisites incomplete,    │
+│        cannot plan"                 │
 └─────────────────────────────────────┘
     ↓
 ✓ All gates passed → Generate plan.md
@@ -287,64 +288,64 @@ Create TASK.yaml (status: ready)
 
 ## Overview
 
-简要说明这个任务要做什么。
+Brief description of what this task accomplishes.
 
 ## Prerequisites
 
-- 前置条件
-- 依赖的其他任务
-- 需要的权限或资源
+- Prerequisites
+- Dependencies on other tasks
+- Required permissions or resources
 
 ## Phase 0: {Phase Name}
 
 ### Description
 
-这个阶段要完成什么，交付什么。
+What this phase will accomplish and deliver.
 
 ### Tests
 
 #### Happy Path
-- [ ] 测试正常流程 1: {具体描述}
-- [ ] 测试正常流程 2: {具体描述}
+- [ ] Test normal flow 1: {specific description}
+- [ ] Test normal flow 2: {specific description}
 
 #### Bad Path
-- [ ] 无效输入: {具体场景}
-- [ ] 缺失必填字段: {具体场景}
-- [ ] 错误状态: {具体场景}
-- [ ] 类型错误: {具体场景}
+- [ ] Invalid input: {specific scenario}
+- [ ] Missing required field: {specific scenario}
+- [ ] Error state: {specific scenario}
+- [ ] Type error: {specific scenario}
 
 #### Edge Cases
-- [ ] 空输入处理
-- [ ] 最大值边界
-- [ ] 并发访问
+- [ ] Empty input handling
+- [ ] Maximum value boundary
+- [ ] Concurrent access
 
 #### Security
-- [ ] 注入攻击防护: {具体场景}
-- [ ] 权限绕过防护: {具体场景}
-- [ ] 输入验证: {具体场景}
+- [ ] Injection attack prevention: {specific scenario}
+- [ ] Permission bypass prevention: {specific scenario}
+- [ ] Input validation: {specific scenario}
 
 #### Data Leak
-- [ ] 错误信息不泄露敏感数据
-- [ ] 日志不包含敏感信息
-- [ ] API 响应不过度暴露
+- [ ] Error messages don't expose sensitive data
+- [ ] Logs don't contain sensitive information
+- [ ] API responses don't over-expose data
 
 #### Data Damage
-- [ ] 部分写入恢复
-- [ ] 竞态条件处理
-- [ ] 事务完整性
+- [ ] Partial write recovery
+- [ ] Race condition handling
+- [ ] Transaction integrity
 
 ### E2E Gate
 
 ```bash
-# Phase 完成验证脚本
+# Phase completion verification script
 {CLI commands to verify phase completion}
 ```
 
 ### Acceptance Criteria
 
-- [ ] 所有 6 类测试通过
-- [ ] E2E Gate 验证通过
-- [ ] 代码已提交并 push
+- [ ] All 6 test categories passed
+- [ ] E2E Gate verification passed
+- [ ] Code committed and pushed
 
 ---
 
@@ -352,60 +353,60 @@ Create TASK.yaml (status: ready)
 
 ### Description
 
-下一阶段要完成什么。
+What the next phase will accomplish.
 
 ### Tests
 
 #### Happy Path
-- [ ] 测试正常流程
+- [ ] Test normal flow
 
 #### Bad Path
-- [ ] 测试错误处理 1
-- [ ] 测试错误处理 2
+- [ ] Test error handling 1
+- [ ] Test error handling 2
 
 #### Edge Cases
-- [ ] 边界条件处理
+- [ ] Boundary condition handling
 
 #### Security
-- [ ] 安全测试
+- [ ] Security test
 
 #### Data Leak
-- [ ] 泄露防护测试
+- [ ] Leak prevention test
 
 #### Data Damage
-- [ ] 数据完整性测试
+- [ ] Data integrity test
 
 ### E2E Gate
 
 ```bash
-# Phase 1 验证脚本
+# Phase 1 verification script
 ```
 
 ### Acceptance Criteria
 
-- [ ] 所有测试通过
-- [ ] E2E Gate 验证通过
+- [ ] All tests passed
+- [ ] E2E Gate verification passed
 
 ---
 
 ## Final E2E Verification
 
 ```bash
-# 全系统端到端验证脚本
-# 验证所有 Phase 的功能协同工作
+# Full system end-to-end verification script
+# Verify all Phase functionalities work together
 ```
 
 ## Risk Mitigation
 
 | Risk | Mitigation | Contingency |
 |------|------------|-------------|
-| [风险 1] | [预防措施] | [发生时的应对] |
+| [Risk 1] | [Prevention measures] | [Response if it occurs] |
 
 ## References
 
-- [相关 Intent](./INTENT.md)
-- [详细规格](./spec.md) (如果存在)
-- [设计文档](./design.md) (如果存在)
+- [Related Intent](./INTENT.md)
+- [Detailed Spec](./spec.md) (if exists)
+- [Design Doc](./design.md) (if exists)
 ```
 
 ### 2. TASK.yaml (Required)
@@ -474,18 +475,18 @@ For an Intent at `intent/session-protocol/INTENT.md`:
 
 ## Overview
 
-实现 Session Protocol 的 Frame 编解码功能。
+Implement Frame encoding/decoding for the Session Protocol.
 
 ## Prerequisites
 
-- @aigne/afs 包已存在
-- TypeScript 环境配置完成
+- @aigne/afs package exists
+- TypeScript environment configured
 
 ## Phase 0: Frame Encoding
 
 ### Description
 
-实现 Frame 的编码函数，将结构化数据转换为二进制格式。
+Implement the Frame encoding function to convert structured data into binary format.
 
 ### Tests
 
@@ -531,10 +532,10 @@ pnpm test:e2e -- --grep "encode"
 
 ### Acceptance Criteria
 
-- [ ] 所有 6 类测试通过
-- [ ] E2E Gate 验证通过
-- [ ] 100% 分支覆盖率
-- [ ] 代码已提交
+- [ ] All 6 test categories passed
+- [ ] E2E Gate verification passed
+- [ ] 100% branch coverage
+- [ ] Code committed
 
 ---
 
@@ -542,7 +543,7 @@ pnpm test:e2e -- --grep "encode"
 
 ### Description
 
-实现 Frame 的解码函数，将二进制数据解析为结构化对象。
+Implement the Frame decoding function to parse binary data into structured objects.
 
 ### Tests
 
@@ -583,9 +584,9 @@ echo '{"test":1}' | node scripts/encode-decode-test.js
 
 ### Acceptance Criteria
 
-- [ ] 所有测试通过
-- [ ] E2E roundtrip 验证通过
-- [ ] 代码已提交
+- [ ] All tests passed
+- [ ] E2E roundtrip verification passed
+- [ ] Code committed
 
 ---
 
