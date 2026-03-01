@@ -5,227 +5,229 @@ description: Interactive Intent approval. Review sections and mark status (locke
 
 # Intent Review
 
-交互式 Section 级别的 Intent 审批工具。
+Interactive section-level Intent approval tool.
 
-## 核心概念
+## Core Concepts
 
-Intent 文档按 Section 粒度审批，三种状态：
+Intent documents are approved at section granularity, with three statuses:
 
-| 状态 | 标记 | 含义 | Agent 行为 |
-|------|------|------|-----------|
-| **LOCKED** | `::: locked` | 核心架构，修改需 human 明确同意 | 暂停，请求确认 |
-| **REVIEWED** | `::: reviewed` | 已审阅，可修改但需通知 | 允许，事后通知 |
-| **DRAFT** | `::: draft` | 草稿，可自由迭代 | 自由修改 |
+| Status | Marker | Meaning | Agent Behavior |
+|--------|--------|---------|----------------|
+| **LOCKED** | `::: locked` | Core architecture, modifications require explicit human consent | Pause, request confirmation |
+| **REVIEWED** | `::: reviewed` | Reviewed, can be modified but notification required | Allow, notify afterwards |
+| **DRAFT** | `::: draft` | Draft, can be freely iterated | Free to modify |
 
-## 工作流程
+## Workflow
 
 ```
 /intent-review [path]
         ↓
 ┌───────────────────┐
-│  解析 Intent 文件  │
-│  识别所有 Section  │
+│  Parse Intent file │
+│  Identify sections │
 └─────────┬─────────┘
           ↓
 ┌───────────────────┐
-│  展示状态概览      │
-│  N locked         │
-│  M reviewed       │
-│  K draft/unmarked │
+│  Show status       │
+│  overview          │
+│  N locked          │
+│  M reviewed        │
+│  K draft/unmarked  │
 └─────────┬─────────┘
           ↓
 ┌───────────────────────────────────────┐
-│  逐个未标记 Section 询问              │
+│  Ask about each unmarked section      │
 │                                       │
 │  AskUserQuestion:                     │
-│  "Section: [标题]"                    │
-│  选项:                                │
-│  - Lock (核心架构)                    │
-│  - Review (确认接受)                  │
-│  - Skip (保持 draft)                  │
+│  "Section: [title]"                   │
+│  Options:                             │
+│  - Lock (core architecture)           │
+│  - Review (confirm acceptance)        │
+│  - Skip (keep as draft)               │
 └─────────┬─────────────────────────────┘
           ↓
 ┌───────────────────┐
-│  更新文件          │
-│  添加标记和属性    │
+│  Update file       │
+│  Add markers and   │
+│  attributes        │
 └───────────────────┘
 ```
 
-## 使用方法
+## Usage
 
-### 审批指定文件
+### Review a specific file
 
 ```
 /intent-review src/core/intent/INTENT.md
 ```
 
-### 审批当前模块
+### Review current module
 
 ```
 cd src/chambers/terminal
 /intent-review
 ```
 
-自动查找 `intent/INTENT.md`
+Automatically finds `intent/INTENT.md`
 
-### 批量审批
+### Batch review
 
 ```
 /intent-review --all
 ```
 
-扫描项目所有 intent 文件
+Scans all intent files in the project
 
-## 执行步骤
+## Execution Steps
 
-### 1. 定位 Intent 文件
+### 1. Locate Intent File
 
 ```javascript
-// 优先级：
-// 1. 用户指定路径
-// 2. 当前目录下 intent/INTENT.md
-// 3. 当前目录下 INTENT.md
+// Priority:
+// 1. User-specified path
+// 2. intent/INTENT.md in current directory
+// 3. INTENT.md in current directory
 ```
 
-### 2. 解析 Section
+### 2. Parse Sections
 
-识别两种 Section：
+Identify two types of sections:
 
-**已标记的**：
+**Marked sections**:
 ```markdown
 ::: locked
-## 模块边界
+## Module Boundaries
 ...
 :::
 ```
 
-**未标记的**（普通 markdown heading）：
+**Unmarked sections** (plain markdown headings):
 ```markdown
-## API 设计
+## API Design
 ...
 ```
 
-### 3. 展示概览
+### 3. Show Overview
 
 ```
 Intent Review: src/core/intent/INTENT.md
 
-状态概览：
+Status Overview:
 ├── 🔒 LOCKED: 2 sections
-│   ├── 模块边界规则
-│   └── 数据结构
+│   ├── Module Boundary Rules
+│   └── Data Structures
 ├── ✓ REVIEWED: 3 sections
-│   ├── API 签名 (by robert, 2026-01-19)
-│   ├── 配置格式
-│   └── 错误处理
+│   ├── API Signatures (by robert, 2026-01-19)
+│   ├── Config Format
+│   └── Error Handling
 └── 📝 UNMARKED: 4 sections
-    ├── 实现建议
-    ├── 性能考虑
-    ├── 示例代码
-    └── 变更记录
+    ├── Implementation Suggestions
+    ├── Performance Considerations
+    ├── Example Code
+    └── Change Log
 
-是否开始审批未标记的 sections？
+Start reviewing unmarked sections?
 ```
 
-### 4. 逐个审批
+### 4. Review Each Section
 
-对每个未标记 Section 使用 AskUserQuestion：
+Use AskUserQuestion for each unmarked section:
 
 ```
-使用 AskUserQuestion:
-- question: "Section: API 签名\n\n内容预览：定义了 create(), delete(), list() 三个函数..."
-- header: "审批状态"
+AskUserQuestion:
+- question: "Section: API Signatures\n\nContent preview: Defines three functions create(), delete(), list()..."
+- header: "Approval Status"
 - options:
-  - label: "Lock (核心架构)"
-    description: "锁定此 section，修改需要 human 明确同意"
-  - label: "Review (确认接受)"
-    description: "标记为已审阅，Agent 可修改但需通知"
-  - label: "Skip (保持 draft)"
-    description: "暂不审批，保持草稿状态"
+  - label: "Lock (core architecture)"
+    description: "Lock this section, modifications require explicit human consent"
+  - label: "Review (confirm acceptance)"
+    description: "Mark as reviewed, Agent can modify but must notify"
+  - label: "Skip (keep as draft)"
+    description: "Do not review yet, keep as draft"
 ```
 
-### 5. 更新文件
+### 5. Update File
 
-根据用户选择，在 markdown 中添加标记：
+Based on user selection, add markers to the markdown:
 
-**Lock 选择**：
+**Lock selection**:
 ```markdown
-::: locked {reason="核心架构"}
-## API 签名
+::: locked {reason="core architecture"}
+## API Signatures
 ...
 :::
 ```
 
-**Review 选择**：
+**Review selection**:
 ```markdown
 ::: reviewed {by=<username> date=<today>}
-## API 签名
+## API Signatures
 ...
 :::
 ```
 
-**Skip 选择**：
-不修改，或添加：
+**Skip selection**:
+No modification, or add:
 ```markdown
 ::: draft
-## 实现建议
+## Implementation Suggestions
 ...
 :::
 ```
 
-## 特殊场景
+## Special Scenarios
 
-### 检测 LOCKED Section 被修改
+### Detecting Modifications to LOCKED Sections
 
-当文件有未提交的修改时：
+When the file has uncommitted changes:
 
 ```
-⚠️ 检测到 LOCKED section 被修改：
-- Section: 模块边界规则
-- 修改内容: [diff preview]
+⚠️ LOCKED section modification detected:
+- Section: Module Boundary Rules
+- Changes: [diff preview]
 
-此修改需要 human 明确同意。是否接受？
+This modification requires explicit human consent. Accept?
 ```
 
-### 查看审批历史
+### View Approval History
 
 ```
 /intent-review --history src/core/intent/INTENT.md
 ```
 
-输出：
+Output:
 ```
-Section: API 签名
+Section: API Signatures
 ├── 2026-01-19 robert: reviewed
 ├── 2026-01-15 robert: draft → reviewed
 └── 2026-01-10 created
 
-Section: 模块边界
-├── 2026-01-18 robert: locked (reason: 核心架构)
+Section: Module Boundaries
+├── 2026-01-18 robert: locked (reason: core architecture)
 └── 2026-01-12 created
 ```
 
-## 与其他工具配合
+## Integration with Other Tools
 
 ```
-intent-interview → 创建 Intent (默认全是 draft)
+intent-interview → Create Intent (all sections default to draft)
         ↓
-/intent-review → 审批关键 sections
+/intent-review → Approve key sections
         ↓
-aine-dev-flow → 开发实现 (遵守 locked/reviewed 规则)
+aine-dev-flow → Develop implementation (respects locked/reviewed rules)
         ↓
-intent-sync → 检查一致性
+intent-sync → Check consistency
 ```
 
-## 配置
+## Configuration
 
-可在 `~/.claude/settings.json` 中配置默认 reviewer：
+Configure the default reviewer in `~/.claude/settings.json`:
 
 ```json
 {
   "idd": {
     "reviewer": "robert",
-    "autoLockPatterns": ["模块边界", "数据结构", "安全约束"]
+    "autoLockPatterns": ["Module Boundaries", "Data Structures", "Security Constraints"]
   }
 }
 ```

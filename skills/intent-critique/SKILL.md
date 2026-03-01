@@ -5,142 +5,148 @@ description: Critical review of Intent design quality. Checks for over-engineeri
 
 # Intent Critique
 
-设计质量的批判性审查。不检查格式，只检查"是否该这么设计"。
+Critical review of design quality. Does not check formatting, only checks "should the design be this way?"
 
-## 核心问题
+## Core Question
 
-每次 critique 回答一个问题：**这个设计能更简单吗？**
+Every critique answers one question: **Can this design be simpler?**
 
-## Anti-Accretion Rule: 净减
+## Anti-Accretion Rule: Net Reduction
 
-**Critique 后总行数必须 ≤ 之前。** 这是硬约束，不是建议。
+**Total line count after critique must be ≤ before.** This is a hard constraint, not a suggestion.
 
-Critique 只允许 4 种操作：
+Critique only allows 4 operations:
 
-| 操作 | 说明 | 示例 |
-|------|------|------|
-| **删除** | 移除 section 或内容 | 删除未使用的插件系统设计 |
-| **合并** | 多个 section 合为一个 | 将 Error Handling 合入 API Constraints |
-| **拆分** | 移到独立 intent | §13-§18 从 ash 拆为 ash/agentic-patterns |
-| **简化** | 用更少的行表达相同约束 | 5 行描述压缩为 2 行 |
+| Operation | Description | Example |
+|-----------|-------------|---------|
+| **Delete** | Remove section or content | Remove unused plugin system design |
+| **Merge** | Combine multiple sections into one | Merge Error Handling into API Constraints |
+| **Split** | Move to a separate intent | §13-§18 split from ash to ash/agentic-patterns |
+| **Simplify** | Express same constraints in fewer lines | Compress 5-line description to 2 lines |
 
-**禁止：**
-- ❌ 引入新概念或新 section
-- ❌ 添加新分析框架
-- ❌ 扩展现有 section 的范围
+**Forbidden:**
+- ❌ Introduce new concepts or new sections
+- ❌ Add new analysis frameworks
+- ❌ Expand scope of existing sections
 
-如果发现缺了什么，输出 gap flag，不直接填充：
+If something is found missing, output a gap flag, do not fill it directly:
 
 ```
-Gap: intent 没有说明 failure handling。建议在下一轮 interview 中讨论。
+Gap: Intent doesn't describe failure handling. Suggest discussing in the next interview round.
 ```
 
-如果确实需要加新内容，必须：
-1. 先删等量或更多旧内容
-2. 用户明确同意
-3. 最终行数仍然 ≤ 初始行数
+If new content truly needs to be added, it must:
+1. First delete an equal or greater amount of old content
+2. Get explicit user agreement
+3. Final line count must still be ≤ initial line count
 
-## 检查维度
+## Check Dimensions
 
-| 维度 | 信号 | 问题 |
-|------|------|------|
-| **Over-engineering** | 复杂的配置系统、插件架构、多层抽象 | "这个复杂度是当前需求驱动的吗？" |
-| **YAGNI** | "未来可能需要"、"预留扩展点"、"支持多种..." | "删掉这个，MVP 还能工作吗？" |
-| **过早抽象** | 只有一个实现的接口、只用一次的工具函数 | "现在真的需要这层抽象吗？" |
-| **边界问题** | 模块间大量数据传递、循环依赖、职责模糊 | "这个边界切在这里自然吗？" |
-| **隐藏复杂度** | 看似简单但实现困难的描述 | "这句话背后的实现复杂度是什么？" |
+| Dimension | Signal | Question |
+|-----------|--------|----------|
+| **Over-engineering** | Complex config systems, plugin architecture, multi-layer abstraction | "Is this complexity driven by current requirements?" |
+| **YAGNI** | "Might need in the future", "Reserved extension points", "Support multiple..." | "If we remove this, does the MVP still work?" |
+| **Premature Abstraction** | Interface with only one implementation, utility function used only once | "Do we really need this layer of abstraction now?" |
+| **Boundary Issues** | Large data passing between modules, circular dependencies, unclear responsibilities | "Is this boundary natural here?" |
+| **Hidden Complexity** | Descriptions that seem simple but are difficult to implement | "What is the implementation complexity behind this statement?" |
 
-## 工作流程
+## Workflow
 
 ```
 /intent-critique [path]
         ↓
 ┌───────────────────┐
-│  读取 Intent 文件  │
-│  理解设计意图      │
+│  Read Intent file  │
+│  Understand design │
+│  intent            │
 └─────────┬─────────┘
           ↓
 ┌───────────────────┐
-│  逐维度分析        │
-│  识别可疑设计      │
+│  Analyze by        │
+│  dimension         │
+│  Identify suspect  │
+│  designs           │
 └─────────┬─────────┘
           ↓
 ┌───────────────────────────────────────┐
-│  对每个发现，与用户讨论：              │
+│  For each finding, discuss with user: │
 │                                       │
-│  展示问题 + 简化建议                   │
+│  Show issue + simplification          │
+│  suggestion                           │
 │  AskUserQuestion:                     │
-│  - 接受简化                           │
-│  - 保留原设计（说明理由）              │
-│  - 跳过此项                           │
+│  - Accept simplification              │
+│  - Keep original design (state reason)│
+│  - Skip this item                     │
 └─────────┬─────────────────────────────┘
           ↓
 ┌───────────────────┐
-│  汇总 critique     │
-│  可选更新 Intent   │
+│  Summarize         │
+│  critique          │
+│  Optionally update │
+│  Intent            │
 └───────────────────┘
 ```
 
-## 使用方法
+## Usage
 
 ```bash
-# 审查指定 Intent
+# Review a specific Intent
 /intent-critique src/core/intent/INTENT.md
 
-# 审查当前目录
+# Review current directory
 /intent-critique
 
-# 只分析不修改
+# Analyze only, no modifications
 /intent-critique --dry-run
 ```
 
-## 执行步骤
+## Execution Steps
 
-### 0. 记录初始行数
+### 0. Record Initial Line Count
 
-**第一步必须是计数。** 在任何分析之前：
+**First step must be counting.** Before any analysis:
 
 ```bash
 wc -l INTENT.md
-# 记录为 before_lines
+# Record as before_lines
 ```
 
-将 `before_lines` 记录下来，critique 结束时用于验证净减。
+Record `before_lines` for verification of net reduction at the end of critique.
 
-### 0.5 Convergence Check（修改 ≥ 3 次时自动触发）
+### 0.5 Convergence Check (auto-triggered when modified ≥ 3 times)
 
-检查 git log 中 INTENT.md 的提交次数。如果 ≥ 3 次，在正常 critique 之前先跑 convergence：
+Check the number of commits for INTENT.md in git log. If ≥ 3, run convergence before the normal critique:
 
-**4 步 convergence 检查：**
+**4-step convergence check:**
 
-1. **Anchor trace** — 对每个 section 问：能追溯到 anchor 吗？
-   - 不能 → 标记为候选删除
+1. **Anchor trace** — For each section ask: Can it be traced back to the anchor?
+   - Cannot → Mark as deletion candidate
 
-2. **Implementation match** — 对每个 section 问：有对应的实现吗？
-   - 有实现 → 保留
-   - 没实现且不在 plan 里 → 标记为候选删除
+2. **Implementation match** — For each section ask: Is there corresponding implementation?
+   - Has implementation → Keep
+   - No implementation and not in plan → Mark as deletion candidate
 
-3. **Constraint vs Analysis** — 对每个 section 问：这是约束还是分析？
-   - "Three Dimensions of Chat Experience" = 分析 → 精简或移到 appendix
-   - "INV-1: LLM is a Pure Function" = 约束 → 保留
+3. **Constraint vs Analysis** — For each section ask: Is this a constraint or analysis?
+   - "Three Dimensions of Chat Experience" = analysis → Simplify or move to appendix
+   - "INV-1: LLM is a Pure Function" = constraint → Keep
 
-4. **Dedup with sub-intents** — 有 section 跟子 intent 重复吗？
-   - 有 → 删掉，留一个链接
+4. **Dedup with sub-intents** — Are there sections duplicated in sub-intents?
+   - Yes → Delete, leave a link
 
-**Convergence 输出格式：**
+**Convergence output format:**
 
 ```markdown
 ## Convergence Check (triggered: 5 commits since last convergence)
 
 ### Anchor trace failures
-- § Agentic Pattern Zones — cannot trace to "ASH 是 shell 语言"
+- § Agentic Pattern Zones — cannot trace to "ASH is a shell language"
 - § Echo Deprecation — migration plan, not core spec
 
 ### Unimplemented sections
 - § Template Registry — no code, not in plan
 
 ### Analysis (not constraint)
-- § AI Agent 适配性分析 — 40 lines of analysis, 0 constraints
+- § AI Agent Compatibility Analysis — 40 lines of analysis, 0 constraints
 
 ### Duplicated in sub-intents
 - § Boot Sequence — duplicates kernel/bootloader INTENT.md §2
@@ -148,232 +154,232 @@ wc -l INTENT.md
 → Candidates for removal: 4 sections, ~280 lines
 ```
 
-跑完 convergence 后，进入正常 critique 流程。
+After convergence, proceed to normal critique flow.
 
-### 0.7 读取 Records 索引
+### 0.7 Read Records Index
 
-如果 `records/INDEX.md` 存在，先读取索引了解完整决策上下文：
+If `records/INDEX.md` exists, read the index first to understand the full decision context:
 
-- 哪些 interview 做过哪些决策
-- 其他 AI（ChatGPT、Gemini 等）给过什么 review 意见
-- 之前的 critique 记录
+- Which interviews made which decisions
+- What review feedback other AIs (ChatGPT, Gemini, etc.) have given
+- Previous critique records
 
-按需深入读取相关 record 文件。这解决了 context asymmetry —— 即使原始讨论发生在其他 AI 上，这里也有完整记录。
+Read related record files in depth as needed. This solves context asymmetry — even if the original discussion happened on other AIs, there is a complete record here.
 
-### 0.8 Devil's Advocate（独立评估）
+### 0.8 Devil's Advocate (Independent Assessment)
 
-起一个**不带当前讨论 context 的 subagent**，只给它：
-- INTENT.md 全文
-- Anchor 声明
+Spawn a **subagent without the current discussion context**, giving it only:
+- Full text of INTENT.md
+- Anchor statement
 
-让它独立回答 3 个问题：
-1. 这个 intent 最大的设计风险是什么？
-2. 哪些 section 看起来像分析而非约束？
-3. 如果只能保留 3 个 section，你保留哪些？
+Have it independently answer 3 questions:
+1. What is the biggest design risk in this intent?
+2. Which sections look like analysis rather than constraints?
+3. If you could only keep 3 sections, which would you keep?
 
-将 devil's advocate 的输出作为 critique 的额外输入，不直接采纳但用于交叉验证自己的判断。
+Use the devil's advocate output as additional input for the critique, not adopting it directly but using it to cross-validate your own judgment.
 
-### 1. 读取并理解 Intent
+### 1. Read and Understand Intent
 
-先完整阅读 Intent，理解：
-- 要解决什么问题
-- 核心设计决策
-- 主要组件和边界
+Read the full Intent first to understand:
+- What problem it solves
+- Core design decisions
+- Main components and boundaries
 
-### 2. 逐维度扫描
+### 2. Scan by Dimension
 
-#### Over-engineering 信号
-
-```markdown
-检查是否存在：
-- 可配置的部分 > 3 个
-- 插件/扩展机制
-- 多于 2 层的抽象
-- "支持多种 X"的描述
-- 复杂的状态机
-```
-
-#### YAGNI 信号
+#### Over-engineering Signals
 
 ```markdown
-检查是否存在：
-- "未来可能..."
-- "预留..."
-- "方便以后..."
-- 只在"高级场景"使用的功能
-- 没有具体 use case 的抽象
+Check for:
+- More than 3 configurable components
+- Plugin/extension mechanisms
+- More than 2 layers of abstraction
+- "Support multiple X" descriptions
+- Complex state machines
 ```
 
-#### 过早抽象信号
+#### YAGNI Signals
 
 ```markdown
-检查是否存在：
-- 只有一个实现的接口/协议
-- 只用一次的公共函数
-- 只有一个子类的基类
-- 不必要的工厂/策略模式
+Check for:
+- "Might need in the future..."
+- "Reserved for..."
+- "For future convenience..."
+- Features only used in "advanced scenarios"
+- Abstractions without concrete use cases
 ```
 
-#### 边界问题信号
+#### Premature Abstraction Signals
 
 ```markdown
-检查是否存在：
-- 模块间传递 > 5 个参数
-- A 依赖 B，B 也依赖 A
-- 一个改动需要同时改多个模块
-- 职责描述模糊或重叠
+Check for:
+- Interface/protocol with only one implementation
+- Public function used only once
+- Base class with only one subclass
+- Unnecessary factory/strategy patterns
 ```
 
-### 3. 生成发现列表
+#### Boundary Issue Signals
 
-对每个发现，准备：
-- **位置**：Intent 中的具体 section
-- **问题**：简短描述问题
-- **简化建议**：具体的替代方案
-- **风险**：简化可能带来的代价
+```markdown
+Check for:
+- More than 5 parameters passed between modules
+- A depends on B, B also depends on A
+- A single change requires modifying multiple modules
+- Vague or overlapping responsibility descriptions
+```
 
-### 4. 交互式讨论
+### 3. Generate Findings List
 
-对每个发现使用 AskUserQuestion：
+For each finding, prepare:
+- **Location**: Specific section in Intent
+- **Issue**: Brief description of the problem
+- **Simplification Suggestion**: Specific alternative approach
+- **Risk**: Potential cost of simplification
+
+### 4. Interactive Discussion
+
+Use AskUserQuestion for each finding:
 
 ```
-发现 1/N: Over-engineering
+Finding 1/N: Over-engineering
 
-Section: ## 插件系统
-问题: 定义了完整的插件加载、生命周期、沙箱机制，但目前只有 2 个内置功能。
+Section: ## Plugin System
+Issue: Defines complete plugin loading, lifecycle, and sandbox mechanisms, but currently only has 2 built-in features.
 
-简化建议: 删除插件系统，直接硬编码这 2 个功能。
-未来需要时再加。
+Simplification Suggestion: Remove plugin system, hardcode these 2 features directly.
+Add back when needed in the future.
 
-风险: 如果很快需要第三方插件，要重新设计。
+Risk: If third-party plugins are needed soon, redesign required.
 
 ---
 AskUserQuestion:
-- question: "是否接受这个简化？"
+- question: "Accept this simplification?"
 - options:
-  - "接受简化" - 删除插件系统设计
-  - "保留原设计" - 请说明具体场景
-  - "跳过" - 暂不决定
+  - "Accept simplification" - Remove plugin system design
+  - "Keep original design" - Please state the specific scenario
+  - "Skip" - Decide later
 ```
 
-### 5. 汇总报告
+### 5. Summary Report
 
 ```markdown
 # Intent Critique Report
 
-## 文件: src/core/intent/INTENT.md
+## File: src/core/intent/INTENT.md
 
-## 统计
-- 发现问题: 5
-- 接受简化: 3
-- 保留原设计: 1
-- 跳过: 1
+## Statistics
+- Issues found: 5
+- Simplifications accepted: 3
+- Original designs kept: 1
+- Skipped: 1
 
-## 已接受的简化
+## Accepted Simplifications
 
-### 1. 删除插件系统
-- 原设计: 完整插件架构
-- 简化为: 硬编码 2 个功能
-- 影响 sections: ## 插件系统, ## 架构
+### 1. Remove Plugin System
+- Original design: Full plugin architecture
+- Simplified to: Hardcoded 2 features
+- Affected sections: ## Plugin System, ## Architecture
 
-### 2. 合并配置层
+### 2. Merge Config Layers
 ...
 
-## 保留的设计
+## Kept Designs
 
-### 1. 多数据源支持
-- 原因: 用户明确表示 v1.1 需要
-- 建议: 在 Intent 中标注具体 timeline
+### 1. Multi-data-source Support
+- Reason: User explicitly stated needed for v1.1
+- Suggestion: Note the specific timeline in Intent
 
-## 跳过的项目
+## Skipped Items
 ...
 
-## 下一步
-- [ ] 更新 Intent 文件（如果选择自动更新）
-- [ ] 运行 /intent-validate 检查格式
-- [ ] 运行 /intent-review 重新审批受影响的 sections
+## Next Steps
+- [ ] Update Intent file (if auto-update chosen)
+- [ ] Run /intent-validate to check format
+- [ ] Run /intent-review to re-approve affected sections
 ```
 
-### 6. 可选：更新 Intent
+### 6. Optional: Update Intent
 
-如果用户同意，自动更新 Intent：
-- 删除被简化掉的 sections
-- 添加简化说明到变更记录
-- 将受影响的 sections 标记回 `draft`
+If user agrees, automatically update Intent:
+- Delete simplified sections
+- Add simplification notes to change log
+- Mark affected sections back to `draft`
 
-### 7. 验证净减（必须）
+### 7. Verify Net Reduction (Required)
 
-更新 Intent 后，立即验证：
+After updating Intent, immediately verify:
 
 ```bash
 wc -l INTENT.md
-# 记录为 after_lines
+# Record as after_lines
 ```
 
-**判定规则：**
+**Decision rules:**
 
 ```
 if after_lines > before_lines:
-    ❌ 拒绝保存。回滚更改。
-    报告：
+    ❌ Refuse to save. Rollback changes.
+    Report:
       before: {before_lines} lines
       after:  {after_lines} lines
       delta:  +{after_lines - before_lines} lines
       "Critique must net-reduce. Review changes and remove additions."
 
 if after_lines <= before_lines:
-    ✅ 保存成功。
-    报告：
+    ✅ Save successful.
+    Report:
       before: {before_lines} lines
       after:  {after_lines} lines
       reduced: {before_lines - after_lines} lines ({percentage}%)
 ```
 
-### 8. 保存 Critique 记录
+### 8. Save Critique Record
 
-将完整 critique 报告保存到 `records/critique-{date}.md`，更新 `records/INDEX.md`：
+Save the complete critique report to `records/critique-{date}.md`, update `records/INDEX.md`:
 
 ```markdown
 | 2026-02-06 | critique | — | Convergence + critique, removed §13-§15 (-180 lines), kept §2 |
 ```
 
-记录包含：convergence 结果、devil's advocate 输出、每个发现的决策、净行数变化。
+The record includes: convergence results, devil's advocate output, decisions for each finding, net line count change.
 
-## 讨论技巧
+## Discussion Techniques
 
-### 提问方式
+### Questioning Approach
 
-**好的提问**:
-- "删掉 X，系统还能工作吗？"
-- "有没有具体场景需要 X？"
-- "X 的复杂度值得吗？"
+**Good questions**:
+- "If we remove X, does the system still work?"
+- "Is there a specific scenario that requires X?"
+- "Is the complexity of X worth it?"
 
-**避免**:
-- 预设答案
-- 过于理论化的讨论
-- 同时问多个不相关的问题
+**Avoid**:
+- Presupposing answers
+- Overly theoretical discussions
+- Asking multiple unrelated questions at once
 
-### 接受"保留"的时机
+### When to Accept "Keep"
 
-当用户提供：
-- 具体的使用场景
-- 明确的时间线（"下月就要"）
-- 外部约束（"合作方要求"）
+When the user provides:
+- Specific usage scenarios
+- Clear timeline ("needed next month")
+- External constraints ("required by partner")
 
-记录理由，建议在 Intent 中也注明。
+Record the rationale, and suggest noting it in the Intent as well.
 
-## 与其他工具配合
+## Integration with Other Tools
 
 ```
 intent-interview → intent-validate → intent-critique → intent-review
                                           ↑
-                                     可独立调用
-                                     任何时候想反思设计时
+                                     Can be invoked independently
+                                     Whenever you want to reflect on design
 ```
 
-## 不做什么
+## What It Does NOT Do
 
-- ❌ 不检查格式（intent-validate 的职责）
-- ❌ 不检查一致性（intent-sync 的职责）
-- ❌ 不标记审批状态（intent-review 的职责）
-- ❌ 不自动做决定（必须与用户讨论）
+- ❌ Does not check formatting (intent-validate's responsibility)
+- ❌ Does not check consistency (intent-sync's responsibility)
+- ❌ Does not mark approval status (intent-review's responsibility)
+- ❌ Does not make decisions automatically (must discuss with user)

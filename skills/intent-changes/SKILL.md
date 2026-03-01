@@ -5,24 +5,24 @@ description: Manage structured change proposals for design documents with PR-lik
 
 # Intent Changes
 
-设计文档的结构化变更提案与协作 Review 工具。
+Structured change proposal and collaborative review tool for design documents.
 
-## 核心概念
+## Core Concepts
 
 ### Change Proposal
 
-每个变更是一个独立提案：
+Each change is an independent proposal:
 
-| 字段 | 说明 |
-|------|------|
-| **ID** | 唯一标识 (C001, C002...) |
+| Field | Description |
+|-------|-------------|
+| **ID** | Unique identifier (C001, C002...) |
 | **Type** | ADD / MODIFY / REPLACE / DELETE |
 | **Status** | PENDING / ACCEPTED / REJECTED |
-| **Target** | 变更位置 |
-| **Before/After** | 变更内容 |
-| **Decision** | 决策记录 (reviewer, timestamp, comment) |
+| **Target** | Change location |
+| **Before/After** | Change content |
+| **Decision** | Decision record (reviewer, timestamp, comment) |
 
-### 状态流
+### Status Flow
 
 ```
 PENDING ──accept──> ACCEPTED ──finalize──> Applied
@@ -30,74 +30,74 @@ PENDING ──accept──> ACCEPTED ──finalize──> Applied
     └──reject──> REJECTED
 ```
 
-## 命令
+## Commands
 
-| 命令 | 说明 |
-|------|------|
-| `/intent-changes start <file>` | 启动或恢复 review |
-| `/intent-changes propose` | 提出变更建议 |
-| `/intent-changes accept <id>` | 接受变更 |
-| `/intent-changes reject <id>` | 拒绝变更 |
-| `/intent-changes status` | 查看当前状态 |
-| `/intent-changes finalize` | 交互式 apply |
+| Command | Description |
+|---------|-------------|
+| `/intent-changes start <file>` | Start or resume review |
+| `/intent-changes propose` | Propose changes |
+| `/intent-changes accept <id>` | Accept a change |
+| `/intent-changes reject <id>` | Reject a change |
+| `/intent-changes status` | View current status |
+| `/intent-changes finalize` | Interactive apply |
 
-## 工作流程
+## Workflow
 
 ```
 /intent-changes start <file>
         ↓
 ┌───────────────────┐
-│  检查 .reviews/   │
-│  有则恢复         │
-│  无则创建         │
+│  Check .reviews/  │
+│  Resume if exists  │
+│  Create if not     │
 └─────────┬─────────┘
           ↓
 /intent-changes propose
         ↓
 ┌───────────────────────────────────────┐
-│  读取源文档                            │
-│  与用户讨论变更内容                     │
-│  生成 Change Proposal (C001, C002...)  │
-│  写入 .reviews/{name}.review.md        │
+│  Read source document                 │
+│  Discuss changes with user            │
+│  Generate Change Proposal (C001...)   │
+│  Write to .reviews/{name}.review.md   │
 └─────────┬─────────────────────────────┘
           ↓
 /intent-changes accept/reject
         ↓
 ┌───────────────────┐
-│  更新 status      │
-│  记录 reviewer    │
-│  记录 timestamp   │
+│  Update status     │
+│  Record reviewer   │
+│  Record timestamp  │
 └─────────┬─────────┘
           ↓
 /intent-changes finalize
         ↓
 ┌───────────────────────────────────────┐
-│  逐个显示 ACCEPTED 变更               │
-│  交互确认: Apply? [Y/n/view]          │
-│  Apply 到源文档                        │
-│  生成变更摘要                          │
+│  Show each ACCEPTED change            │
+│  Interactive confirm: Apply? [Y/n/view]│
+│  Apply to source document             │
+│  Generate change summary              │
 └───────────────────────────────────────┘
 ```
 
-## 执行步骤
+## Execution Steps
 
-### 命令: start
+### Command: start
 
-**输入**: 文件路径
+**Input**: File path
 
-**步骤**:
+**Steps**:
 
-1. 验证源文件存在
-2. 确定 review 文件路径: `.reviews/{basename}.review.md`
-3. 如果 review 文件存在:
-   - 读取并解析
-   - 显示当前状态概览
-4. 如果不存在:
-   - 创建 `.reviews/` 目录（如不存在）
-   - 创建 review 文件，写入 frontmatter
-5. 设置当前 session 的 source 和 review 路径
+1. Verify source file exists
+2. Determine review file path: `.reviews/{basename}.review.md`
+3. If review file exists:
+   - Read and parse
+   - Show current status overview
+4. If not exists:
+   - Create `.reviews/` directory (if not exists)
+   - Create review file with frontmatter
+5. Set current session source and review paths
 
-**输出**:
+**Output**:
 ```
 Review session started.
 
@@ -107,91 +107,91 @@ Review: .reviews/kind-system-spec.review.md
 Status: 3 PENDING, 2 ACCEPTED, 1 REJECTED
 
 Commands:
-  /intent-changes propose  - 提出新变更
-  /intent-changes status   - 查看详情
-  /intent-changes finalize - 应用变更
+  /intent-changes propose  - Propose new changes
+  /intent-changes status   - View details
+  /intent-changes finalize - Apply changes
 ```
 
-### 命令: propose
+### Command: propose
 
-**前置条件**: 已执行 start
+**Prerequisite**: Must have run start
 
-**步骤**:
+**Steps**:
 
-1. 读取源文档内容
-2. 读取当前 review 文件，获取已有提案
-3. 计算下一个 ID (如已有 C001-C005，下一个是 C006)
-4. 与用户讨论：
-   - 展示源文档结构
-   - 使用 AskUserQuestion 询问变更类型和位置
-   - 收集变更内容
-5. 生成 Change Proposal 块
-6. 追加到 review 文件
+1. Read source document content
+2. Read current review file, get existing proposals
+3. Calculate next ID (if already has C001-C005, next is C006)
+4. Discuss with user:
+   - Show source document structure
+   - Use AskUserQuestion to ask about change type and location
+   - Collect change content
+5. Generate Change Proposal block
+6. Append to review file
 
-**交互流程**:
+**Interactive flow**:
 
 ```
-使用 AskUserQuestion:
-- question: "你想对哪个部分提出变更？"
-- header: "变更位置"
+AskUserQuestion:
+- question: "Which section do you want to propose changes for?"
+- header: "Change Location"
 - options:
-  - "## Kind 定义" - 第一个 section
-  - "## Actions" - 第二个 section
-  - "## 示例" - 第三个 section
-  - "其他位置" - 手动指定
+  - "## Kind Definition" - First section
+  - "## Actions" - Second section
+  - "## Examples" - Third section
+  - "Other location" - Specify manually
 ```
 
 ```
-使用 AskUserQuestion:
-- question: "变更类型是什么？"
-- header: "变更类型"
+AskUserQuestion:
+- question: "What type of change?"
+- header: "Change Type"
 - options:
-  - "ADD" - 新增内容
-  - "MODIFY" - 修改现有内容
-  - "REPLACE" - 替换整个 section
-  - "DELETE" - 删除内容
+  - "ADD" - Add new content
+  - "MODIFY" - Modify existing content
+  - "REPLACE" - Replace entire section
+  - "DELETE" - Delete content
 ```
 
-然后收集具体内容，生成提案。
+Then collect specific content and generate the proposal.
 
-### 命令: accept / reject
+### Command: accept / reject
 
-**输入**: 提案 ID，可选 comment/reason
+**Input**: Proposal ID, optional comment/reason
 
-**语法**:
+**Syntax**:
 ```
 /intent-changes accept C001
 /intent-changes accept C001 --comment "LGTM"
-/intent-changes reject C002 --reason "不同意这个改法"
+/intent-changes reject C002 --reason "Disagree with this approach"
 ```
 
-**步骤**:
+**Steps**:
 
-1. 读取 review 文件
-2. 找到对应 ID 的提案
-3. 验证当前状态是 PENDING
-4. 更新状态为 ACCEPTED 或 REJECTED
-5. 添加 Decision 记录:
-   - reviewer: 从 git config user.name 或 $USER 获取
-   - timestamp: 当前日期
-   - comment: 用户提供的评论
-6. 写回 review 文件
+1. Read review file
+2. Find proposal with matching ID
+3. Verify current status is PENDING
+4. Update status to ACCEPTED or REJECTED
+5. Add Decision record:
+   - reviewer: from git config user.name or $USER
+   - timestamp: current date
+   - comment: user-provided comment
+6. Write back to review file
 
-**Decision 格式**:
+**Decision format**:
 ```markdown
 **Decision:**
 - ✓ @robmao (2026-01-21): "LGTM"
 ```
 
-或拒绝时:
+Or when rejected:
 ```markdown
 **Decision:**
-- ✗ @robmao (2026-01-21): "不同意这个改法"
+- ✗ @robmao (2026-01-21): "Disagree with this approach"
 ```
 
-### 命令: status
+### Command: status
 
-**输出详情**:
+**Detailed output**:
 
 ```
 Review: kind-system-spec.md
@@ -201,80 +201,82 @@ Reviewers: @robmao, @claude
 ─────────────────────────────────
 
 PENDING (2):
-  C002 [MODIFY] 修改 Kind 定义的措辞
-  C004 [ADD] 新增性能章节
+  C002 [MODIFY] Revise Kind definition wording
+  C004 [ADD] Add performance chapter
 
 ACCEPTED (3):
-  C001 [ADD] 新增 Action 分类说明
+  C001 [ADD] Add Action classification description
        ✓ @robmao (2026-01-21)
-  C003 [MODIFY] 调整示例代码
+  C003 [MODIFY] Adjust example code
        ✓ @claude (2026-01-21)
-  C005 [DELETE] 删除过时章节
+  C005 [DELETE] Remove outdated chapter
        ✓ @robmao (2026-01-21)
 
 REJECTED (1):
-  C006 [REPLACE] 重写整个文档
-       ✗ @robmao (2026-01-21): "改动太大"
+  C006 [REPLACE] Rewrite entire document
+       ✗ @robmao (2026-01-21): "Too many changes"
 
 ─────────────────────────────────
 
 Next: /intent-changes finalize (3 changes ready)
 ```
 
-### 命令: finalize
+### Command: finalize
 
-**前置条件**: 至少有一个 ACCEPTED 的提案
+**Prerequisite**: At least one ACCEPTED proposal
 
-**步骤**:
+**Steps**:
 
-1. 读取 review 文件，筛选 ACCEPTED 提案
-2. 按 Target 位置排序（从文档末尾往前，避免位置偏移）
-3. 对每个提案交互确认:
+1. Read review file, filter ACCEPTED proposals
+2. Sort by Target position (from end of document to start, to avoid position shifts)
+3. Interactive confirmation for each proposal:
 
 ```
-[1/3] C001 [ADD]: 新增 Action 分类说明
+[1/3] C001 [ADD]: Add Action classification description
 
 Target: After "## Actions"
 
 Content to add:
-┌────────────────────────────────────────┐
-│ Actions 分为三类：                      │
-│ - Inline: 同步执行，决定 commit 成功与否 │
-│ - Deferred: 异步执行，失败不影响 commit  │
-│ - Observational: 只读，可以慢           │
-└────────────────────────────────────────┘
+┌────────────────────────────────────────────┐
+│ Actions are divided into three categories: │
+│ - Inline: Synchronous, determines commit   │
+│   success                                  │
+│ - Deferred: Async, failure doesn't affect  │
+│   commit                                   │
+│ - Observational: Read-only, can be slow    │
+└────────────────────────────────────────────┘
 
 Apply this change? [Y/n/view/quit]
 ```
 
-用户选项:
-- `Y` (默认): Apply 并继续
-- `n`: Skip 此变更（保持 ACCEPTED 状态但不 apply）
-- `view`: 显示完整的 before/after diff
-- `quit`: 中止 finalize
+User options:
+- `Y` (default): Apply and continue
+- `n`: Skip this change (keep ACCEPTED status but don't apply)
+- `view`: Show full before/after diff
+- `quit`: Abort finalize
 
-4. Apply 变更到源文档
-5. 更新 review 文件:
-   - 已 apply 的标记为 `[APPLIED]`
-   - 更新 frontmatter status 为 `finalized`（如果全部处理完）
-6. 输出摘要
+4. Apply changes to source document
+5. Update review file:
+   - Mark applied changes as `[APPLIED]`
+   - Update frontmatter status to `finalized` (if all processed)
+6. Output summary
 
-**Apply 摘要**:
+**Apply summary**:
 ```
 Finalize complete.
 
 Applied: 2
-  C001 - 新增 Action 分类说明
-  C003 - 调整示例代码
+  C001 - Add Action classification description
+  C003 - Adjust example code
 
 Skipped: 1
-  C005 - 删除过时章节 (user chose to skip)
+  C005 - Remove outdated chapter (user chose to skip)
 
 Source updated: intent/specs/kind-system-spec.md
 Review archived: .reviews/kind-system-spec.review.md
 ```
 
-## Review 文件格式
+## Review File Format
 
 ### Frontmatter
 
@@ -289,129 +291,129 @@ status: active
 ---
 ```
 
-status 值:
-- `active`: 进行中
-- `finalized`: 已完成 apply
-- `abandoned`: 已放弃
+Status values:
+- `active`: In progress
+- `finalized`: Apply completed
+- `abandoned`: Abandoned
 
-### Change Proposal 块
+### Change Proposal Block
 
 ```markdown
 ---
 
 ## C001 [ADD] [PENDING]
 
-> 简短描述
+> Short description
 
 **Target:** After "## Actions"
 
 **After:**
 ```markdown
-新增的内容...
+New content...
 ```
 
 ---
 
 ## C002 [MODIFY] [ACCEPTED]
 
-> 简短描述
+> Short description
 
-**Target:** Section "## Kind 定义"
+**Target:** Section "## Kind Definition"
 
 **Before:**
 ```markdown
-原内容...
+Original content...
 ```
 
 **After:**
 ```markdown
-新内容...
+New content...
 ```
 
-**Reason:** 变更理由
+**Reason:** Reason for change
 
 **Decision:**
 - ✓ @robmao (2026-01-21): "LGTM"
 ```
 
-## 获取 Reviewer 名称
+## Getting Reviewer Name
 
-按优先级:
-1. 命令参数 `--reviewer`
+By priority:
+1. Command parameter `--reviewer`
 2. `git config user.name`
-3. 环境变量 `$USER`
+3. Environment variable `$USER`
 
 ```bash
-# 获取方式
+# How to get
 git config user.name || echo $USER
 ```
 
-## 边界
+## Boundaries
 
-### 做什么
+### What It Does
 
-- ✓ 结构化管理变更提案
-- ✓ 追踪决策过程
-- ✓ 支持多 reviewer 署名
-- ✓ 交互式 apply
+- ✓ Structured change proposal management
+- ✓ Track decision process
+- ✓ Support multi-reviewer signatures
+- ✓ Interactive apply
 
-### 不做什么
+### What It Doesn't Do
 
-- ✗ 格式校验 → intent-validate
-- ✗ Section 审批 → intent-review
-- ✗ 设计质量判断 → intent-critique
-- ✗ 实现一致性 → intent-sync
+- ✗ Format validation → intent-validate
+- ✗ Section approval → intent-review
+- ✗ Design quality judgment → intent-critique
+- ✗ Implementation consistency → intent-sync
 
-## 与其他工具配合
+## Integration with Other Tools
 
 ```
-intent-interview → 创建 Intent
+intent-interview → Create Intent
         ↓
-intent-critique → 质疑设计
+intent-critique → Challenge design
         ↓
-/intent-changes → 管理变更提案  ← 本 Skill
+/intent-changes → Manage change proposals  ← This Skill
         ↓
-intent-review → 锁定 sections
+intent-review → Lock sections
         ↓
-intent-plan → 开始实现
+intent-plan → Start implementation
 ```
 
-## 示例
+## Examples
 
-### 独立 Review
+### Independent Review
 
 ```bash
-# 开始
+# Start
 /intent-changes start intent/specs/tools-spec.md
 
-# 提出建议
+# Propose changes
 /intent-changes propose
 
-# 决策
+# Decide
 /intent-changes accept C001
-/intent-changes reject C002 --reason "不需要"
+/intent-changes reject C002 --reason "Not needed"
 
-# 应用
+# Apply
 /intent-changes finalize
 ```
 
-### 协作 Review
+### Collaborative Review
 
 ```bash
-# A 启动并提建议
+# A starts and proposes
 /intent-changes start spec.md
 /intent-changes propose  # C001-C003
 
-# B 来 review
+# B reviews
 /intent-changes accept C001 --comment "Good"
-/intent-changes reject C002 --reason "换个方式"
+/intent-changes reject C002 --reason "Try a different approach"
 
-# A 提新方案
-/intent-changes propose  # C004 替代 C002
+# A proposes new alternative
+/intent-changes propose  # C004 replaces C002
 
-# B 接受
+# B accepts
 /intent-changes accept C004
 
-# 最终 apply
+# Final apply
 /intent-changes finalize
 ```

@@ -5,132 +5,132 @@ description: Run Intent validation and sync checks. Triggers intent-validate and
 
 # Intent Check
 
-触发 Intent 检查流程，是 intent-validate 和 intent-sync agents 的用户友好入口。
+Triggers Intent validation workflow. A user-friendly entry point for the intent-validate and intent-sync agents.
 
-## 功能
+## Features
 
-1. **格式验证** (intent-validate) - 检查 Intent 文件是否符合 IDD 规范
-2. **代码同步** (intent-sync) - 检查代码实现与 Intent 的一致性
-3. **综合报告** - 汇总两项检查结果
+1. **Format Validation** (intent-validate) - Check if Intent files comply with IDD standards
+2. **Code Sync** (intent-sync) - Check consistency between code implementation and Intent
+3. **Combined Report** - Aggregate results from both checks
 
-## 工作流程
+## Workflow
 
 ```
 /intent-check [options]
         ↓
 ┌───────────────────────────────────┐
-│  确定检查范围                      │
-│  - 指定路径 or 当前目录            │
-│  - 单模块 or 全项目                │
+│  Determine check scope            │
+│  - Specified path or current dir  │
+│  - Single module or entire project│
 └─────────────┬─────────────────────┘
               ↓
 ┌───────────────────────────────────┐
-│  调用 intent-validate agent       │
-│  → 格式合规报告                    │
+│  Run intent-validate agent        │
+│  → Format compliance report       │
 └─────────────┬─────────────────────┘
               ↓
 ┌───────────────────────────────────┐
-│  调用 intent-sync agent           │
-│  → 代码一致性报告                  │
+│  Run intent-sync agent            │
+│  → Code consistency report        │
 └─────────────┬─────────────────────┘
               ↓
 ┌───────────────────────────────────┐
-│  汇总报告                          │
-│  - 问题列表                        │
-│  - 修复建议                        │
-│  - 行动项                          │
+│  Combined report                  │
+│  - Issue list                     │
+│  - Fix suggestions                │
+│  - Action items                   │
 └───────────────────────────────────┘
 ```
 
-## 使用方法
+## Usage
 
-### 完整检查
+### Full Check
 
 ```
 /intent-check
 ```
 
-检查当前目录的 Intent，包括格式验证和代码同步。
+Check the Intent in the current directory, including format validation and code sync.
 
-### 指定路径
+### Specify Path
 
 ```
 /intent-check src/core/
 ```
 
-检查指定模块。
+Check a specific module.
 
-### 仅格式验证
+### Format Validation Only
 
 ```
 /intent-check --validate
 ```
 
-只运行 intent-validate，检查 Intent 文件格式。
+Only run intent-validate to check Intent file format.
 
-### 仅代码同步
+### Code Sync Only
 
 ```
 /intent-check --sync
 ```
 
-只运行 intent-sync，检查代码与 Intent 一致性。
+Only run intent-sync to check code-Intent consistency.
 
-### 全项目检查
+### Full Project Check
 
 ```
 /intent-check --all
 ```
 
-扫描并检查项目中所有 Intent 文件。
+Scan and check all Intent files in the project.
 
-### Git 差异检查
+### Git Diff Check
 
 ```
 /intent-check --git-diff origin/main
 ```
 
-只检查相对于基准分支有变更的模块。
+Only check modules that have changes relative to the base branch.
 
-## 输出示例
+## Output Example
 
 ```markdown
 # Intent Check Report
 
-> 检查时间: 2026-01-19 14:30
-> 检查范围: src/core/
+> Check time: 2026-01-19 14:30
+> Check scope: src/core/
 
-## 概览
+## Overview
 
-| 检查项 | 状态 | 问题数 |
-|--------|------|--------|
-| 格式验证 | ⚠️ | 3 |
-| 代码同步 | ❌ | 5 |
+| Check Item | Status | Issues |
+|------------|--------|--------|
+| Format Validation | ⚠️ | 3 |
+| Code Sync | ❌ | 5 |
 
-## 格式问题 (intent-validate)
+## Format Issues (intent-validate)
 
-### ⚠️ 警告
+### ⚠️ Warnings
 
 1. `src/core/intent/INTENT.md:45`
-   - 缺少 ASCII 结构图
+   - Missing ASCII structure diagram
 
 2. `src/core/intent/INTENT.md:78`
-   - API 定义缺少返回值说明
+   - API definition missing return value description
 
-### ❌ 错误
+### ❌ Errors
 
 1. `src/core/intent/INTENT.md:12`
-   - Section 标记语法错误: `::: lock` → `::: locked`
+   - Section marker syntax error: `::: lock` → `::: locked`
 
-## 同步问题 (intent-sync)
+## Sync Issues (intent-sync)
 
-### 新增未记录
+### Undocumented Additions
 
-| API | 文件 | 建议 |
-|-----|------|------|
-| `getChamberStats()` | chamber.js:89 | 添加到 Intent |
+| API | File | Suggestion |
+|-----|------|------------|
+| `getChamberStats()` | chamber.js:89 | Add to Intent |
 
-### 签名不一致
+### Signature Mismatch
 
 ```diff
 # deleteChamber
@@ -138,55 +138,55 @@ description: Run Intent validation and sync checks. Triggers intent-validate and
 + Code:   deleteChamber(app, name, options)
 ```
 
-### 边界违规
+### Boundary Violations
 
-| 规则 | 位置 | 说明 |
-|------|------|------|
-| 禁止直接拼接路径 | routes/apps.js:45 | 应使用 chamber.getPath() |
+| Rule | Location | Description |
+|------|----------|-------------|
+| No direct path concatenation | routes/apps.js:45 | Should use chamber.getPath() |
 
-## 行动建议
+## Recommended Actions
 
-### 立即修复 (P0)
-1. 修复 Section 标记语法错误
-2. 修复边界违规
+### Fix Immediately (P0)
+1. Fix Section marker syntax error
+2. Fix boundary violation
 
-### 建议修复 (P1)
-1. 更新 Intent: 添加 `getChamberStats()` API
-2. 更新 Intent: `deleteChamber` 添加 options 参数
+### Suggested Fixes (P1)
+1. Update Intent: Add `getChamberStats()` API
+2. Update Intent: Add options parameter to `deleteChamber`
 
-### 可选改进 (P2)
-1. 添加 ASCII 结构图
-2. 补充 API 返回值说明
+### Optional Improvements (P2)
+1. Add ASCII structure diagram
+2. Add API return value descriptions
 ```
 
-## 退出码
+## Exit Codes
 
-| 码 | 含义 |
-|----|------|
-| 0 | 全部通过 |
-| 1 | 有警告 |
-| 2 | 有错误 |
+| Code | Meaning |
+|------|---------|
+| 0 | All passed |
+| 1 | Has warnings |
+| 2 | Has errors |
 
-可用于 CI/CD 集成：
+Can be used for CI/CD integration:
 
 ```bash
 /intent-check || exit 1
 ```
 
-## 与其他命令配合
+## Integration with Other Commands
 
 ```
-/intent-init              # 初始化
+/intent-init              # Initialize
     ↓
-/intent-interview         # 创建 Intent
+/intent-interview         # Create Intent
     ↓
-/intent-review            # 审批
+/intent-review            # Approve
     ↓
-[开发实现]
+[Development]
     ↓
-/intent-check             # ← 检查（本命令）
+/intent-check             # ← Check (this command)
     ↓
-修复问题 or 更新 Intent
+Fix issues or update Intent
     ↓
-/intent-check             # 再次检查直到通过
+/intent-check             # Re-check until passed
 ```
