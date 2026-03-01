@@ -5,13 +5,13 @@ description: Share your IDD adoption story. Through structured interviewing, cre
 
 # Intent Story
 
-通过采访式对话，帮助用户分享 IDD (Intent Driven Development) 的采用经验，生成传播 IDD 方法论的博客文章。
+Through interview-style conversation, help users share their IDD (Intent Driven Development) adoption experiences and generate blog posts that spread the IDD methodology.
 
-## 核心理念
+## Core Principles
 
-- **采访式创作**：AI 分析 + 提问 + 用户回答 + AI 按风格整合
-- **真实故事**：基于用户真实经验，不编造案例
-- **传播 IDD**：每篇文章都自然介绍 IDD 理念和工具
+- **Interview-style creation**: AI analysis + questions + user answers + AI integrates according to style
+- **Real stories**: Based on user's real experiences, no fabricated cases
+- **Spread IDD**: Each article naturally introduces IDD concepts and tools
 
 ## Workflow
 
@@ -19,315 +19,317 @@ description: Share your IDD adoption story. Through structured interviewing, cre
 /intent-story
         ↓
 ┌───────────────────────────────────┐
-│  Phase 1: 背景分析                │
-│  - 检测输入语言                   │
-│  - 加载写作风格（如有）           │
-│  - 了解用户 IDD 使用背景          │
+│  Phase 1: Background Analysis     │
+│  - Detect input language          │
+│  - Load writing style (if any)    │
+│  - Understand user's IDD usage    │
+│    background                     │
 └─────────────┬─────────────────────┘
               ↓
 ┌───────────────────────────────────┐
-│  Phase 2: 结构化采访              │
-│  - 采用经历                       │
-│  - 关键转折/教训                  │
-│  - 具体收益/数据                  │
-│  - 建议和反思                     │
+│  Phase 2: Structured Interview    │
+│  - Adoption experience            │
+│  - Key turning points / lessons   │
+│  - Specific benefits / data       │
+│  - Advice and reflections         │
 └─────────────┬─────────────────────┘
               ↓
 ┌───────────────────────────────────┐
-│  Phase 3: 确认输出需求            │
-│  - 文章格式/风格/长度             │
-│  - 目标语言版本                   │
+│  Phase 3: Confirm Output Needs    │
+│  - Article format / style / length│
+│  - Target language versions       │
 └─────────────┬─────────────────────┘
               ↓
 ┌───────────────────────────────────┐
-│  Phase 4: 生成文章                │
-│  - 完整博客 + 社交媒体版          │
-│  - 多语言版本（按需）             │
-│  - 自然融入 IDD 介绍              │
+│  Phase 4: Generate Article        │
+│  - Full blog + social media ver.  │
+│  - Multi-language versions        │
+│    (on demand)                    │
+│  - Naturally integrate IDD intro  │
 └───────────────────────────────────┘
 ```
 
-## Phase 1: 背景分析
+## Phase 1: Background Analysis
 
-### 语言检测
+### Language Detection
 
-- 根据用户输入的主要语言确定初始写作语言
-- 后续可询问是否需要其他语言版本
+- Determine initial writing language based on the user's primary input language
+- Can ask later if other language versions are needed
 
-### 写作风格加载
+### Writing Style Loading
 
-按优先级加载（如存在）：
-1. `~/.claude/content-profile/writing-style.md`（用户自定义）
-2. 使用本技能默认风格
+Load by priority (if exists):
+1. `~/.claude/content-profile/writing-style.md` (user-defined)
+2. Use this skill's default style
 
-### 初始问题
+### Initial Questions
 
-使用 AskUserQuestion 了解背景：
+Use AskUserQuestion to understand the background:
 
 ```
-question: "你是在什么类型的项目中使用 IDD 的？"
-header: "项目类型"
+question: "What type of project are you using IDD for?"
+header: "Project Type"
 options:
-  - label: "系统软件/框架"
-    description: "框架、库、基础设施等"
-  - label: "Web 应用"
-    description: "前端或全栈 Web 项目"
-  - label: "移动应用"
-    description: "iOS、Android 或跨平台"
-  - label: "其他"
-    description: "其他类型项目"
+  - label: "System Software / Framework"
+    description: "Frameworks, libraries, infrastructure, etc."
+  - label: "Web Application"
+    description: "Frontend or full-stack web project"
+  - label: "Mobile Application"
+    description: "iOS, Android, or cross-platform"
+  - label: "Other"
+    description: "Other types of projects"
 ```
 
-## Phase 2: 结构化采访
+## Phase 2: Structured Interview
 
-### 采访维度
+### Interview Dimensions
 
-每轮 2-3 个问题，通常 3-5 轮完成。
+2-3 questions per round, typically 3-5 rounds to complete.
 
-#### 1. 采用动机
-
-```
-"是什么让你开始尝试 IDD？"
-- A) 文档总是过时，想找更好的方法
-- B) AI 辅助开发需要更好的上下文管理
-- C) 团队协作需要更清晰的设计契约
-- D) 其他原因
-```
-
-#### 2. 转折时刻
+#### 1. Adoption Motivation
 
 ```
-"使用 IDD 过程中，有没有一个'啊哈'时刻让你觉得值得？"
-[开放式，收集故事]
+"What made you start trying IDD?"
+- A) Documentation always gets outdated, looking for a better approach
+- B) AI-assisted development needs better context management
+- C) Team collaboration needs clearer design contracts
+- D) Other reasons
 ```
 
-#### 3. 具体收益
+#### 2. Turning Point
 
 ```
-"你观察到的最明显的改变是什么？"
-- A) AI 代码质量提升（更少需要修改）
-- B) 架构边界更清晰
-- C) 文档不再过时
-- D) 新人上手更快
-- E) 其他
+"During your IDD journey, was there an 'aha' moment that made it worthwhile?"
+[Open-ended, collect stories]
 ```
 
-```
-"能否量化一下收益？（可选）"
-[开放式，如："AI 一次生成可用代码的比例从 30% 提升到 70%"]
-```
-
-#### 4. 教训和挑战
+#### 3. Specific Benefits
 
 ```
-"遇到过什么挑战或走过的弯路？"
-[开放式]
+"What was the most noticeable change you observed?"
+- A) AI code quality improved (fewer corrections needed)
+- B) Architecture boundaries became clearer
+- C) Documentation no longer gets outdated
+- D) New members onboard faster
+- E) Other
 ```
 
 ```
-"如果重新开始，你会有什么不同的做法？"
-[开放式]
+"Can you quantify the benefits? (optional)"
+[Open-ended, e.g.: "The rate of AI generating usable code in one shot went from 30% to 70%"]
 ```
 
-#### 5. 给其他人的建议
+#### 4. Lessons and Challenges
 
 ```
-"对考虑采用 IDD 的人，你有什么建议？"
-[开放式]
+"What challenges did you encounter or detours did you take?"
+[Open-ended]
 ```
 
-### 采访原则
+```
+"If you could start over, what would you do differently?"
+[Open-ended]
+```
 
-- **少问多推**：能从上文推断的不重复问
-- **故事优先**：鼓励用户分享具体经历
-- **真实性**：不编造案例，用户没有的就不加
-- **深度追问**：对有价值的回答继续挖掘
-
-## Phase 3: 确认输出需求
-
-采访完成后，确认输出格式：
-
-### 文章风格
+#### 5. Advice for Others
 
 ```
-question: "这篇文章的风格？"
-header: "风格"
+"What advice would you give to someone considering adopting IDD?"
+[Open-ended]
+```
+
+### Interview Principles
+
+- **Ask less, infer more**: Don't repeat what can be inferred from context
+- **Stories first**: Encourage users to share specific experiences
+- **Authenticity**: Don't fabricate cases; if the user doesn't have it, don't add it
+- **Deep follow-up**: Continue digging into valuable responses
+
+## Phase 3: Confirm Output Needs
+
+After the interview is complete, confirm output format:
+
+### Article Style
+
+```
+question: "What style should this article be?"
+header: "Style"
 options:
-  - label: "技术分享"
-    description: "peer-to-peer，工程师视角"
-  - label: "经验总结"
-    description: "回顾反思，Founder/Lead 视角"
-  - label: "入门指南"
-    description: "帮助新人理解和上手"
-  - label: "案例研究"
-    description: "详细的项目案例分析"
+  - label: "Technical Sharing"
+    description: "Peer-to-peer, engineer's perspective"
+  - label: "Experience Summary"
+    description: "Retrospective, Founder/Lead perspective"
+  - label: "Getting Started Guide"
+    description: "Help newcomers understand and get started"
+  - label: "Case Study"
+    description: "Detailed project case analysis"
 ```
 
-### 文章长度
+### Article Length
 
 ```
-question: "目标长度？"
-header: "长度"
+question: "Target length?"
+header: "Length"
 options:
-  - label: "短文 (800-1200字)"
-    description: "快速阅读，重点突出"
-  - label: "中等 (1500-2500字)"
-    description: "有深度的分享"
-  - label: "长文 (3000+字)"
-    description: "完整详细的案例分析"
+  - label: "Short (800-1200 words)"
+    description: "Quick read, focused highlights"
+  - label: "Medium (1500-2500 words)"
+    description: "In-depth sharing"
+  - label: "Long (3000+ words)"
+    description: "Complete detailed case analysis"
 ```
 
-### 语言版本
+### Language Versions
 
 ```
-question: "需要生成哪些语言版本？"
-header: "语言"
+question: "Which language versions should be generated?"
+header: "Language"
 multiSelect: true
 options:
-  - label: "中文"
-    description: "简体中文版本"
+  - label: "Chinese"
+    description: "Simplified Chinese version"
   - label: "English"
     description: "English version"
-  - label: "两者都要"
-    description: "中英双语"
+  - label: "Both"
+    description: "Chinese and English"
 ```
 
-## Phase 4: 生成文章
+## Phase 4: Generate Article
 
-### 文章结构
+### Article Structure
 
 ```markdown
-# [标题：吸引人的 IDD 经验标题]
+# [Title: Engaging IDD Experience Title]
 
-[开头：核心洞察/结论，吸引读者]
+[Opening: Core insight/conclusion to hook the reader]
 
-## 背景/起因
+## Background / Motivation
 
-[为什么开始使用 IDD]
+[Why you started using IDD]
 
-## 关键发现/转折
+## Key Discoveries / Turning Points
 
-[使用过程中的洞察和故事]
+[Insights and stories during usage]
 
-## 实际收益
+## Actual Benefits
 
-[具体的改变和量化数据]
+[Specific changes and quantified data]
 
-## 教训和建议
+## Lessons and Advice
 
-[给其他人的建议]
+[Advice for others]
 
-## 结语
+## Conclusion
 
-[总结 + IDD 介绍]
+[Summary + IDD introduction]
 
 ---
 
-## 关于 IDD
+## About IDD
 
-[IDD 简介和工具链，见下文模板]
+[IDD overview and toolchain, see template below]
 ```
 
-### IDD 介绍模板（必须包含）
+### IDD Introduction Template (Required)
 
-每篇文章结尾自然融入：
+Every article must naturally include at the end:
 
 ```markdown
 ---
 
 ## About IDD (Intent Driven Development)
 
-IDD 是一种以 Intent（意图）为核心的开发方法论：
+IDD is a development methodology centered on Intent:
 
 ```
 Intent → Test → Code → Sync
 ```
 
-**核心理念**：Intent 是新的源代码。Code review 由 AI 完成，Intent review 由 Human 完成。
+**Core Principle**: Intent is the new source code. Code review is done by AI, Intent review is done by Humans.
 
-**工具链**：
-- `/intent-assess` - 评估项目是否适合 IDD
-- `/intent-init` - 初始化 IDD 结构
-- `/intent-interview` - 从想法创建 Intent
-- `/intent-check` - 验证代码与 Intent 一致性
+**Toolchain**:
+- `/intent-assess` - Assess if a project is suitable for IDD
+- `/intent-init` - Initialize IDD structure
+- `/intent-interview` - Create Intent from ideas
+- `/intent-check` - Verify code-Intent consistency
 
-**开始使用**：
+**Get Started**:
 ```bash
 npx add-skill arcblock/idd
 ```
 
-了解更多：[github.com/ArcBlock/idd](https://github.com/ArcBlock/idd)
+Learn more: [github.com/ArcBlock/idd](https://github.com/ArcBlock/idd)
 ```
 
-### 社交媒体版本
+### Social Media Version
 
-同时生成 Twitter/X 版本：
+Also generate a Twitter/X version:
 
 ```
-[核心洞察，1-2句]
+[Core insight, 1-2 sentences]
 
-[关键数据/收益]
+[Key data/benefits]
 
-[一句话 CTA]
+[One-line CTA]
 
-🔗 [文章链接]
+🔗 [Article link]
 
 #IntentDrivenDevelopment #IDD #AIEngineering
 ```
 
-### 写作风格指南
+### Writing Style Guide
 
-遵循以下原则（来自用户写作风格）：
+Follow these principles (from user writing style):
 
-| 原则 | 说明 |
-|------|------|
-| 观点鲜明 | 不做骑墙派，有明确立场 |
-| 真实案例 | 故事来自用户，不编造 |
-| 段落充实 | 每段 4-8 句，有完整论述 |
-| 小标题精简 | 2-4 个小标题，内容丰富 |
-| 内省式表达 | "我觉得..."而非"你应该..." |
-| 避免套话 | 每个观点要有具体洞察支撑 |
-| 禁用 em dash | 用 "-" 或 "," 替代 "—" |
+| Principle | Description |
+|-----------|-------------|
+| Strong opinions | Don't be a fence-sitter, have a clear stance |
+| Real cases | Stories come from the user, not fabricated |
+| Substantial paragraphs | 4-8 sentences per paragraph, with complete arguments |
+| Concise subheadings | 2-4 subheadings, rich content |
+| Introspective expression | "I think..." rather than "You should..." |
+| Avoid clichés | Every point needs specific insight to support it |
+| No em dash | Use "-" or "," instead of "—" |
 
-## 输出示例
+## Output Example
 
 ```markdown
-# 从「文档总是过时」到「Intent 就是代码」- 我的 IDD 实践
+# From "Documentation Always Gets Outdated" to "Intent Is Code" - My IDD Journey
 
-半年前，我们团队面临一个经典困境：文档写得再好，三周后就过时...
+Six months ago, our team faced a classic dilemma: no matter how well-written the documentation was, it was outdated in three weeks...
 
-[正文...]
+[Body...]
 
 ---
 
 ## About IDD
 
-IDD (Intent Driven Development) 是一种以意图为核心的开发方法论...
+IDD (Intent Driven Development) is a development methodology centered on intent...
 
-[工具链介绍...]
+[Toolchain introduction...]
 
-**开始使用**：
+**Get Started**:
 \`\`\`bash
 git clone https://github.com/ArcBlock/idd
 claude mcp add-plugin ~/path/to/idd
 \`\`\`
 ```
 
-## 与其他命令配合
+## Integration with Other Commands
 
 ```
-[用户使用 IDD 一段时间]
+[User uses IDD for a while]
         ↓
-/intent-story             # 分享经验，生成博客
+/intent-story             # Share experience, generate blog
         ↓
-发布博客 / 社交媒体
+Publish blog / social media
         ↓
-传播 IDD 方法论
+Spread IDD methodology
 ```
 
-## 注意事项
+## Notes
 
-1. **真实性**：所有案例和数据必须来自用户，不能编造
-2. **自然融入**：IDD 介绍要自然融入结尾，不是生硬广告
-3. **用户语言**：主要语言跟随用户输入
-4. **风格一致**：如有用户写作风格配置，优先使用
+1. **Authenticity**: All cases and data must come from the user, nothing fabricated
+2. **Natural integration**: IDD introduction should blend naturally into the ending, not be a hard advertisement
+3. **User's language**: Primary language follows the user's input
+4. **Style consistency**: If user writing style config exists, use it first

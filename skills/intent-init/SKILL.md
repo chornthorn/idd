@@ -5,147 +5,152 @@ description: Initialize IDD structure in a project. Checks existing state, creat
 
 # Intent Init
 
-初始化项目的 IDD (Intent Driven Development) 结构。
+Initialize the IDD (Intent Driven Development) structure for a project.
 
-## 功能
+## Features
 
-1. **检查现状** - 扫描项目，识别已有的 intent 文件或类似结构
-2. **创建目录** - 建立标准 IDD 目录结构
-3. **生成模板** - 创建入口 INTENT.md 和模块级模板
-4. **配置建议** - 根据项目类型给出配置建议
+1. **Check current state** - Scan the project, identify existing intent files or similar structures
+2. **Create directories** - Set up the standard IDD directory structure
+3. **Generate templates** - Create entry-point INTENT.md and module-level templates
+4. **Configuration suggestions** - Provide configuration recommendations based on project type
 
-## 工作流程
+## Workflow
 
 ```
 /intent-init
     ↓
 ┌───────────────────────────────────┐
-│  Phase 1: 扫描现状                │
-│  - 查找 intent/, specs/, docs/   │
-│  - 识别 README, DESIGN 等文档    │
-│  - 检测项目类型 (monorepo/单模块) │
+│  Phase 1: Scan Current State      │
+│  - Search for intent/, specs/,    │
+│    docs/                          │
+│  - Identify README, DESIGN, and   │
+│    other docs                     │
+│  - Detect project type            │
+│    (monorepo/single module)       │
 └─────────────┬─────────────────────┘
               ↓
 ┌───────────────────────────────────┐
-│  Phase 2: 展示发现                │
-│  - 已有文档列表                   │
-│  - 项目结构分析                   │
-│  - 推荐的 IDD 结构                │
+│  Phase 2: Present Findings        │
+│  - Existing document list         │
+│  - Project structure analysis     │
+│  - Recommended IDD structure      │
 └─────────────┬─────────────────────┘
               ↓
 ┌───────────────────────────────────┐
-│  Phase 3: 确认并创建              │
-│  - AskUserQuestion 确认结构       │
-│  - 创建目录和模板文件             │
-│  - 可选：迁移现有文档             │
+│  Phase 3: Confirm and Create      │
+│  - AskUserQuestion to confirm     │
+│    structure                      │
+│  - Create directories and         │
+│    template files                 │
+│  - Optional: Migrate existing docs│
 └───────────────────────────────────┘
 ```
 
-## 标准 IDD 目录结构
+## Standard IDD Directory Structure
 
-### 单模块项目
+### Single Module Project
 
 ```
 project/
 ├── intent/
-│   └── INTENT.md           # 项目 Intent（入口）
+│   └── INTENT.md           # Project Intent (entry point)
 ├── src/
 └── ...
 ```
 
-### Monorepo / 多模块项目
+### Monorepo / Multi-Module Project
 
 ```
 project/
 ├── intent/
-│   ├── INTENT.md           # 项目概述（入口）
+│   ├── INTENT.md           # Project overview (entry point)
 │   └── architecture/
-│       ├── DEPENDENCIES.md # 模块依赖图
-│       └── BOUNDARIES.md   # 边界规则
+│       ├── DEPENDENCIES.md # Module dependency graph
+│       └── BOUNDARIES.md   # Boundary rules
 │
 ├── src/
 │   ├── module-a/
 │   │   └── intent/
-│   │       └── INTENT.md   # 模块 Intent
+│   │       └── INTENT.md   # Module Intent
 │   └── module-b/
 │       └── intent/
 │           └── INTENT.md
 └── ...
 ```
 
-## 模板内容
+## Template Content
 
-### 项目级 INTENT.md
+### Project-Level INTENT.md
 
 ```markdown
 # [Project Name] Intent
 
-> 一句话描述项目目标
+> One-sentence description of the project goal
 
-状态: draft
-最后更新: YYYY-MM-DD
+Status: draft
+Last updated: YYYY-MM-DD
 
-## 愿景
+## Vision
 
-[项目要解决的问题和目标]
+[Problem to solve and goals]
 
-## 架构概览
+## Architecture Overview
 
-[ASCII 架构图]
+[ASCII architecture diagram]
 
-## 模块索引
+## Module Index
 
-| 模块 | 职责 | Intent |
-|------|------|--------|
+| Module | Responsibility | Intent |
+|--------|---------------|--------|
 | xxx | ... | [link] |
 
-## 非目标
+## Non-Goals
 
-- [明确不做什么]
+- [What is explicitly not in scope]
 
-## 约束
+## Constraints
 
-- [技术约束]
-- [业务约束]
+- [Technical constraints]
+- [Business constraints]
 ```
 
-### 模块级 INTENT.md
+### Module-Level INTENT.md
 
 ```markdown
 # [Module] Intent
 
-> 模块职责一句话
+> Module responsibility in one sentence
 
-状态: draft
-最后更新: YYYY-MM-DD
+Status: draft
+Last updated: YYYY-MM-DD
 
-## 职责
+## Responsibilities
 
-[模块做什么]
+[What the module does]
 
-## 非目标
+## Non-Goals
 
-[模块不做什么]
+[What the module does not do]
 
-## 数据结构
+## Data Structures
 
-[核心数据结构定义]
+[Core data structure definitions]
 
 ## API
 
-[对外接口定义]
+[External interface definitions]
 
-## 示例
+## Examples
 
-[输入 → 输出 示例]
+[Input → Output examples]
 ```
 
-## 检测逻辑
+## Detection Logic
 
-### 识别已有 Intent 结构
+### Identifying Existing Intent Structure
 
 ```javascript
-// 检查路径
+// Check paths
 const intentPaths = [
   'intent/INTENT.md',
   'INTENT.md',
@@ -154,19 +159,19 @@ const intentPaths = [
   'design/',
 ];
 
-// 检查内容特征
+// Check content markers
 const intentMarkers = [
-  '## 职责',
-  '## 非目标',
+  '## Responsibilities',
+  '## Non-Goals',
   '::: locked',
   '::: reviewed',
 ];
 ```
 
-### 项目类型识别
+### Project Type Identification
 
 ```javascript
-// Monorepo 特征
+// Monorepo markers
 const monorepoMarkers = [
   'packages/',
   'apps/',
@@ -176,25 +181,25 @@ const monorepoMarkers = [
 ];
 ```
 
-## 选项
+## Options
 
 ```
-/intent-init              # 交互式初始化
-/intent-init --dry-run    # 只展示计划，不执行
-/intent-init --minimal    # 最小化结构
-/intent-init --migrate    # 尝试迁移现有文档
+/intent-init              # Interactive initialization
+/intent-init --dry-run    # Show plan only, don't execute
+/intent-init --minimal    # Minimal structure
+/intent-init --migrate    # Attempt to migrate existing documents
 ```
 
-## 与其他命令配合
+## Integration with Other Commands
 
 ```
-/intent-init              # 初始化结构
+/intent-init              # Initialize structure
     ↓
-/intent-interview         # 填充 Intent 内容
+/intent-interview         # Fill in Intent content
     ↓
-/intent-review            # 审批关键 sections
+/intent-review            # Approve key sections
     ↓
-[开发]
+[Development]
     ↓
-/intent-check             # 检查一致性
+/intent-check             # Check consistency
 ```

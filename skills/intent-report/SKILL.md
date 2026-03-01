@@ -5,116 +5,116 @@ description: Generate human-readable report from Intent files. Converts technica
 
 # Intent Report
 
-将技术性的 Intent 文件转换成人类可读的报告文档。
+Convert technical Intent files into human-readable report documents.
 
-## 用途
+## Purpose
 
-- **给 Stakeholder**：项目概览、进度、关键决策
-- **给新成员**：快速了解项目架构和设计理由
-- **给文档**：生成 README、设计文档、架构说明
-- **给会议**：项目汇报、技术评审
+- **For Stakeholders**: Project overview, progress, key decisions
+- **For New Members**: Quickly understand project architecture and design rationale
+- **For Documentation**: Generate READMEs, design docs, architecture descriptions
+- **For Meetings**: Project presentations, technical reviews
 
-## 工作流程
+## Workflow
 
 ```
 /intent-report [options]
         ↓
 ┌───────────────────────────────────┐
-│  读取 Intent 文件                  │
-│  - 项目级 + 模块级                 │
-│  - 解析结构和元数据                │
+│  Read Intent files                │
+│  - Project-level + module-level   │
+│  - Parse structure and metadata   │
 └─────────────┬─────────────────────┘
               ↓
 ┌───────────────────────────────────┐
-│  确定报告类型                      │
+│  Determine report type            │
 │  - overview / architecture /      │
 │    progress / full                │
 └─────────────┬─────────────────────┘
               ↓
 ┌───────────────────────────────────┐
-│  生成报告                          │
-│  - 重组内容结构                    │
-│  - 转换技术语言                    │
-│  - 添加可视化                      │
+│  Generate report                  │
+│  - Restructure content            │
+│  - Convert technical language     │
+│  - Add visualizations             │
 └─────────────┬─────────────────────┘
               ↓
 ┌───────────────────────────────────┐
-│  输出                              │
+│  Output                           │
 │  - Markdown / HTML / PDF          │
-│  - 写入文件 or 直接展示            │
+│  - Write to file or display       │
 └───────────────────────────────────┘
 ```
 
-## 报告类型
+## Report Types
 
-### 1. Overview (概览)
+### 1. Overview
 
 ```
 /intent-report --type overview
 ```
 
-一页纸项目概览，适合快速了解：
+One-page project overview, suitable for quick understanding:
 
 ```markdown
 # [Project] Overview
 
 ## What is this?
-[一句话说明]
+[One-line description]
 
 ## Problem
-[要解决的问题]
+[Problem to solve]
 
 ## Solution
-[解决方案概述]
+[Solution overview]
 
 ## Architecture
-[简化的架构图]
+[Simplified architecture diagram]
 
 ## Key Modules
 | Module | Purpose |
 |--------|---------|
 
 ## Status
-[当前状态和下一步]
+[Current status and next steps]
 ```
 
-### 2. Architecture (架构)
+### 2. Architecture
 
 ```
 /intent-report --type architecture
 ```
 
-详细架构文档，适合技术评审：
+Detailed architecture document, suitable for technical review:
 
 ```markdown
 # [Project] Architecture
 
 ## System Overview
-[架构图]
+[Architecture diagram]
 
 ## Module Dependencies
-[依赖关系图]
+[Dependency graph]
 
 ## Data Flow
-[数据流图]
+[Data flow diagram]
 
 ## Key Design Decisions
 | Decision | Choice | Rationale |
 
 ## Boundary Rules
-[模块边界规则]
+[Module boundary rules]
 
 ## API Reference
-[核心 API 列表]
+[Core API list]
 ```
 
-### 3. Progress (进度)
+### 3. Progress
 
 ```
 /intent-report --type progress
 ```
 
-项目进度报告，适合汇报：
+Project progress report, suitable for presentations:
 
 ```markdown
 # [Project] Progress Report
@@ -122,7 +122,7 @@ description: Generate human-readable report from Intent files. Converts technica
 > Generated: YYYY-MM-DD
 
 ## Intent Coverage
-[覆盖率图表]
+[Coverage chart]
 
 ## Module Status
 | Module | Intent | Impl | Status |
@@ -130,7 +130,7 @@ description: Generate human-readable report from Intent files. Converts technica
 | core   | ✓      | 80%  | 🟡     |
 
 ## Recent Updates
-[最近的 Intent 变更]
+[Recent Intent changes]
 
 ## Approval Status
 - Locked: N sections
@@ -138,23 +138,23 @@ description: Generate human-readable report from Intent files. Converts technica
 - Draft: K sections
 
 ## Blockers & Risks
-[风险和阻塞项]
+[Risks and blockers]
 
 ## Next Steps
-[下一步计划]
+[Next steps plan]
 ```
 
-### 4. Full (完整)
+### 4. Full
 
 ```
 /intent-report --type full
 ```
 
-完整技术文档，包含所有内容。
+Complete technical document, including all content.
 
-## 输出格式
+## Output Formats
 
-### Markdown (默认)
+### Markdown (Default)
 
 ```
 /intent-report -o report.md
@@ -166,83 +166,83 @@ description: Generate human-readable report from Intent files. Converts technica
 /intent-report --format html -o report.html
 ```
 
-带样式的 HTML 文档，可直接在浏览器查看。
+Styled HTML document, viewable directly in a browser.
 
-### Console (直接显示)
+### Console (Direct Display)
 
 ```
 /intent-report
 ```
 
-不指定输出文件时，直接在终端展示。
+When no output file is specified, display directly in the terminal.
 
-## 使用示例
+## Usage Examples
 
-### 生成项目概览
+### Generate Project Overview
 
 ```
 /intent-report --type overview
 ```
 
-### 生成架构文档给新成员
+### Generate Architecture Doc for New Members
 
 ```
 /intent-report --type architecture -o docs/ARCHITECTURE.md
 ```
 
-### 生成进度报告给 stakeholder
+### Generate Progress Report for Stakeholders
 
 ```
 /intent-report --type progress -o reports/progress-2026-01.md
 ```
 
-### 生成单模块报告
+### Generate Single Module Report
 
 ```
 /intent-report src/core/ --type full
 ```
 
-## 内容转换规则
+## Content Conversion Rules
 
-### 技术语言 → 人类语言
+### Technical Language → Human Language
 
-| Intent 中 | 报告中 |
-|-----------|--------|
-| `## 职责` | "What this module does" |
-| `## 非目标` | "Out of scope" |
-| `## 约束` | "Constraints & Rules" |
+| In Intent | In Report |
+|-----------|-----------|
+| `## Responsibilities` | "What this module does" |
+| `## Non-Goals` | "Out of scope" |
+| `## Constraints` | "Constraints & Rules" |
 | `::: locked` | "Core Architecture (frozen)" |
 | `::: reviewed` | "Approved Design" |
 | `::: draft` | "Work in Progress" |
 
-### ASCII 图 → 可视化
+### ASCII Diagrams → Visualizations
 
-- 保留 ASCII 图（兼容性好）
-- 可选：转换为 Mermaid 图（`--mermaid` 选项）
+- Keep ASCII diagrams (good compatibility)
+- Optional: Convert to Mermaid diagrams (`--mermaid` option)
 
-## 与其他命令配合
+## Integration with Other Commands
 
 ```
-/intent-init              # 初始化
+/intent-init              # Initialize
     ↓
-/intent-interview         # 创建 Intent
+/intent-interview         # Create Intent
     ↓
-/intent-review            # 审批
+/intent-review            # Approve
     ↓
-/intent-report            # ← 生成报告（本命令）
+/intent-report            # ← Generate report (this command)
     ↓
-分享给 stakeholder / 团队
+Share with stakeholders / team
 ```
 
-## 高级选项
+## Advanced Options
 
 ```
 /intent-report
   --type <type>           # overview | architecture | progress | full
   --format <format>       # markdown | html
-  --output <path>         # 输出文件路径
-  --module <path>         # 指定模块
-  --include-draft         # 包含 draft sections
-  --mermaid               # 转换为 Mermaid 图
-  --lang <lang>           # 输出语言 (en | zh)
+  --output <path>         # Output file path
+  --module <path>         # Specify module
+  --include-draft         # Include draft sections
+  --mermaid               # Convert to Mermaid diagrams
+  --lang <lang>           # Output language (en | zh)
 ```

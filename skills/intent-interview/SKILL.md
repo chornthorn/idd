@@ -117,7 +117,7 @@ If gaps exist, continue questioning.
 - Probe tradeoffs ("if X fails, should we Y or Z?")
 - Use concrete scenarios
 - Offer 3-4 mutually exclusive options
-- Match user's language (中文/English)
+- Match user's language (Chinese/English)
 
 #### Don't
 - Ask yes/no questions
